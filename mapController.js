@@ -45,3 +45,20 @@ function flyMapTo (longitude, latitude, height = mapCamera.positionCartographic.
         easingFunction : Cesium.EasingFunction.EXPONENTIAL_IN_OUT
 });
 };
+
+
+/// add a billboard
+function addMapBillboard(longitude, latitude){
+    viewer.entities.add({
+        position : Cesium.Cartesian3.fromDegrees(longitude, latitude),
+        billboard :{
+            image : 'images/pin_icon.png',
+            width : 64, 
+            height : 64,
+            verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
+            heightReference : Cesium.HeightReference.RELATIVE_TO_GROUND
+        }
+    });
+}
+
+//setInterval(function(){console.log(mapCamera.heading + " --- " + mapCamera.pitch);}, 1000 );
