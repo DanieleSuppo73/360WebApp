@@ -1,0 +1,20 @@
+<MAIN>
+    <VIDEO_URL>https://player.vimeo.com/external/347803220.m3u8?s=61a66fd483813c89da138ac578628ca68bb65fe3</VIDEO_URL>
+    <VIDEOMARKERS_URL>https://vr.alicefit.com/_assets/Alessandria/Alessandria_markers.csv</VIDEOMARKERS_URL>
+    <TITLE>Il Lido di Venezia e la Pellestina</TITLE>
+    <SUBTITLE>Un tour 360 sulle isole di Venezia</SUBTITLE>
+    <SUBTITLES_IT_URL>https://vr.alicefit.com/_assets/Alessandria/Alessandria_subtitles.xml</SUBTITLES_IT_URL>
+    <SUBTITLES_EN_URL>https://vr.alicefit.com/_assets/Alessandria/Alessandria_subtitles.xml</SUBTITLES_EN_URL>
+    <TRACK>
+        <GPX_URL>https://vr.alicefit.com/_assets/gps/Alessandria_20190620152931.gpx</GPX_URL>
+        <NAME>Da Cerreto Grue al Belvedere della chiesa di San Paolo</NAME>
+    </TRACK>
+    <TRACK>
+        <GPX_URL>https://vr.alicefit.com/_assets/gps/Alessandria_20190620143007.gpx</GPX_URL>
+        <NAME>Da Passo Coppi a Castellania Coppi</NAME>
+    </TRACK>
+    <TRACK>
+        <GPX_URL>https://vr.alicefit.com/_assets/gps/Alessandria_20190620161704.gpx</GPX_URL>
+        <NAME>La pista ciclabile dedicata a Fausto e Serse e Coppi</NAME>
+    </TRACK>
+</MAIN>

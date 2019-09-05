@@ -23,16 +23,54 @@ function convertTimeCodeToSeconds(timeString, framerate) {
 }
 
 
+
+
+
+
+loadMainData();
+
+/// Load main xml data
+function loadMainData(){
+  loadDoc("data/main.xml", function (xml) {
+    var i;
+    var xmlDoc = xml.responseXML;
+    var title = xmlDoc.getElementsByTagName("TITLE")[0].childNodes[0].nodeValue;
+    var subtitle = xmlDoc.getElementsByTagName("SUBTITLE")[0].childNodes[0].nodeValue;
+    var videoUrl = xmlDoc.getElementsByTagName("VIDEO_URL")[0].childNodes[0].nodeValue;
+    var videoMarkersUrl = xmlDoc.getElementsByTagName("VIDEOMARKERS_URL")[0].childNodes[0].nodeValue;
+    var track = [];
+    var x = xmlDoc.getElementsByTagName("TRACK");
+    for (i = 0; i < x.length; i++) {
+        track.push({
+        gpxUrl: x[i].getElementsByTagName("GPX_URL")[0].childNodes[0].nodeValue,
+        name: x[i].getElementsByTagName("NAME")[0].childNodes[0].nodeValue,
+      });
+    }
+
+    playerSetTitle(title, subtitle);
+  });
+
+  
+}
+
+
+
+
+
 /// Load GPX
 function loadGPX() {
-  loadDoc("Alessandria_20190620124553.gpx", function (xhttp) {
+  loadDoc("data/Alessandria_20190620124553.gpx", function (xhttp) {
 
     gpx = new gpxParser();
     gpx.parse(xhttp.responseText);
-    gpx.waypoints.forEach(function (wpt) {
 
-      console.log("wpt " + wpt.lat);
+    var coordinates = [];
+    gpx.waypoints.forEach(function (wpt) {
+      coordinates.push(wpt.lon, wpt.lat, wpt.ele);
     });
+    
+    /// draw polyline
+    drawPolylineOnTerrain(coordinates);
   });
 }
 
@@ -44,7 +82,7 @@ var playerMarkers = [];
 loadMarkers();
 
 function loadMarkers(){
-  loadDoc("markers.xml", function (xml) {
+  loadDoc("data/markers.xml", function (xml) {
     var i;
     var xmlDoc = xml.responseXML;
     var x = xmlDoc.getElementsByTagName("MARKER");

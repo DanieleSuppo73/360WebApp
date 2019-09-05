@@ -5,7 +5,7 @@ var playerTime;
 /// Player
 var Player = new Clappr.Player({
     //source: 'https://player.vimeo.com/external/356158599.hd.mp4?s=a65bd6b347c2304168f064aa36ff6b72bbe68d49&profile_id=175',
-    source: 'Lido%20-%20Pellestrina_026.mp4',
+    source: 'video/Lido%20-%20Pellestrina_026.mp4',
     plugins: {
         container: [Video360],
       
@@ -19,11 +19,10 @@ var Player = new Clappr.Player({
 Player.getPlugin('click_to_pause').disable();   
 
 
-/// set the title
-SetTitle();
-function SetTitle(){
-  document.getElementById("title").innerHTML = "Hello I'm the title";
-  document.getElementById("subtitle").innerHTML = "Hello I'm the subtitle";
+/// set the title on the poster
+function playerSetTitle(title, subtitle){
+  document.getElementById("title").innerHTML = title;
+  document.getElementById("subtitle").innerHTML = subtitle;
 }
 
 

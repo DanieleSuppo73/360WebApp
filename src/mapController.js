@@ -26,13 +26,19 @@ var mapCamera = scene.camera;
 
 /// Set start map position and orientation
 var defaultHeight = 180;
-flyMapTo(12.3098806, 45.3418537, defaultHeight, Cesium.Math.toRadians(200.0),
- Cesium.Math.toRadians(-50.0), 0);
+viewer.camera.setView({
+    destination : new Cesium.Cartesian3(4404792.475707513, 962828.6766361801, 4508398.182356733),
+    orientation: {
+        heading : Cesium.Math.toRadians(353.5990272815255), // east, default value is 0.0 (north)
+        pitch : Cesium.Math.toRadians(-39.021508523873536),    // default value (looking down)
+        roll : Cesium.Math.toRadians(6.28270206832835)                            
+    }
+});
+
 
 
 
 /// fly camera to position
-
 function flyMapTo (longitude, latitude, height = mapCamera.positionCartographic.height,
      heading = mapCamera.heading, pitch = mapCamera.pitch, duration = null){
     mapCamera.flyTo({
@@ -75,9 +81,9 @@ function addMapBillboard(longitude, latitude, callback = null){
 function flyMapToPin(){
     heading = mapCamera.heading;
     pitch = mapCamera.pitch;
-    range = 764.534479411941;
+    range = 500;
     viewer.flyTo(pin, {
-        offset: new Cesium.HeadingPitchRange(heading, pitch, 500)
+        offset: new Cesium.HeadingPitchRange(heading, pitch, range)
 });
 }
 
@@ -105,7 +111,31 @@ function fadeBillboard(element, callback = null) {
 
 
 
-  function drawPolylineOnTerrain() {
+//   function drawPolylineOnTerrain() {
+
+//     if (!Cesium.Entity.supportsPolylinesOnTerrain(viewer.scene)) {
+//         console.log('Polylines on terrain are not supported on this platform');
+//     }
+
+//     viewer.entities.add({
+//         polyline : {
+//             positions : Cesium.Cartesian3.fromDegreesArray([
+//                 86.953793, 27.928257,
+//                 86.953793, 27.988257,
+//                 86.896497, 27.988257
+//             ]),
+//             clampToGround : true,
+//             width : 5,
+//             material : new Cesium.PolylineOutlineMaterialProperty({
+//                 color : Cesium.Color.ORANGE,
+//                 outlineWidth : 2,
+//                 outlineColor : Cesium.Color.BLACK
+//             })
+//         }
+//     });
+//   }
+
+function drawPolylineOnTerrain(coordinates) {
 
     if (!Cesium.Entity.supportsPolylinesOnTerrain(viewer.scene)) {
         console.log('Polylines on terrain are not supported on this platform');
@@ -113,12 +143,8 @@ function fadeBillboard(element, callback = null) {
 
     viewer.entities.add({
         polyline : {
-            positions : Cesium.Cartesian3.fromDegreesArray([
-                86.953793, 27.928257,
-                86.953793, 27.988257,
-                86.896497, 27.988257
-            ]),
-            clampToGround : true,
+            positions : Cesium.Cartesian3.fromDegreesArrayHeights(coordinates),
+            clampToGround : false,
             width : 5,
             material : new Cesium.PolylineOutlineMaterialProperty({
                 color : Cesium.Color.ORANGE,
@@ -127,4 +153,12 @@ function fadeBillboard(element, callback = null) {
             })
         }
     });
-  }
+}
+
+
+function getCameraInfo(){
+    console.log("position: " + mapCamera.positionWC);
+    console.log("heading: " + Cesium.Math.toDegrees(mapCamera.heading));
+    console.log("pitch: " + Cesium.Math.toDegrees(mapCamera.pitch));
+    console.log("roll: " + mapCamera.roll);
+}
