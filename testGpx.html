@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <title>gpx-parser</title>
+    <script src="gpx-parser.js"></script>
+    <style>
+        table,
+        td,
+        th {
+            border: 1px solid black;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        td,
+        th {
+            padding: .2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <button onclick="TEST()">TEST</button>
+    <form id="loadGPXFile-form">
+        <input type="file" id="loadGPXFile-input">
+        <input type="submit">
+    </form>
+
+    <hr>
+
+    <section id="metadata">
+        <h2 id="title"></h2>
+        <div>
+            <h4>Author</h4>
+            <span id="authorname"></span> | <span id="authoremail"></span> | <span id="authorlink"></span>
+        </div>
+        <div>
+            <h4>Waypoints</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>name</th>
+                        <th>lat</th>
+                        <th>lon</th>
+                        <th>ele</th>
+                        <th>cmt</th>
+                        <th>desc</th>
+                    </tr>
+                </thead>
+                <tbody id="waypoints">
+
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <h4>Tracks</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>name</th>
+                        <th>desc</th>
+                        <th>distance</th>
+                        <th>Avg elevation</th>
+                        <th>Max elevation</th>
+                        <th>Min elevation</th>
+                        <th>Positive elevation difference</th>
+                        <th>Negative elevation difference</th>
+
+                    </tr>
+                </thead>
+                <tbody id="tracks">
+
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <h4>Routes</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>name</th>
+                        <th>desc</th>
+                        <th>distance</th>
+                        <th>Avg elevation</th>
+                        <th>Max elevation</th>
+                        <th>Min elevation</th>
+                        <th>Positive elevation difference</th>
+                        <th>Negative elevation difference</th>
+
+                    </tr>
+                </thead>
+                <tbody id="routes">
+
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+
+    <script>
+        function TEST() {
+
+            loadFile("Alessandria_20190620124553.gpx", debug);
+
+
+
+            // var reader = new FileReader();
+            // var file = "Alessandria_20190620124553.gpx";
+
+
+
+            // gpx = new gpxParser();
+            // console.log("START");
+
+            // reader.onload = function(event) {
+            //     gpx.parse(reader.result);
+
+            //     gpx.waypoints.forEach(function(wpt){
+
+            //                 console.log("wpt " + wpt.lat);
+            //             });
+            // }
+
+
+            // reader.readAsText(file);
+        }
+
+
+
+
+        function loadFile(url, callback) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    callback(this);
+                }
+            };
+            xhttp.open("GET", url, true);
+            xhttp.send();
+        }
+
+
+        function debug(xhttp) {
+
+            gpx = new gpxParser();
+            gpx.parse(xhttp.responseText);
+            gpx.waypoints.forEach(function (wpt) {
+
+                console.log("wpt " + wpt.lat);
+            });
+        }
+    </script>
+</body>
+
+</html>

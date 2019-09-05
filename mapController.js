@@ -67,13 +67,8 @@ function addMapBillboard(longitude, latitude, callback = null){
     }
     
     if (callback != null){
-        console.log("callback da addbillboard");
         callback();
     }
-    else
-    {
-        console.log("no callback da addbillboard");
-    } 
 }
 
 
@@ -108,3 +103,28 @@ function fadeBillboard(element, callback = null) {
     }, 50);
   }
 
+
+
+  function drawPolylineOnTerrain() {
+
+    if (!Cesium.Entity.supportsPolylinesOnTerrain(viewer.scene)) {
+        console.log('Polylines on terrain are not supported on this platform');
+    }
+
+    viewer.entities.add({
+        polyline : {
+            positions : Cesium.Cartesian3.fromDegreesArray([
+                86.953793, 27.928257,
+                86.953793, 27.988257,
+                86.896497, 27.988257
+            ]),
+            clampToGround : true,
+            width : 5,
+            material : new Cesium.PolylineOutlineMaterialProperty({
+                color : Cesium.Color.ORANGE,
+                outlineWidth : 2,
+                outlineColor : Cesium.Color.BLACK
+            })
+        }
+    });
+  }
