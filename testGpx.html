@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>gpx-parser</title>
-    <script src="gpx-parser.js"></script>
+    <script src="src/gpx-parser.js"></script>
     <style>
         table,
         td,
@@ -102,8 +102,18 @@
     <script>
         function TEST() {
 
-            loadFile("Alessandria_20190620124553.gpx", debug);
+            //loadFile("Alessandria_20190620124553.gpx", debug);
 
+
+            loadFile("Alessandria_20190620124553.gpx", function (xhttp) {
+
+                gpx = new gpxParser();
+                gpx.parse(xhttp.responseText);
+                gpx.waypoints.forEach(function (wpt) {
+
+                    console.log("wpt " + wpt.lat);
+                });
+            });
 
 
             // var reader = new FileReader();
@@ -142,15 +152,15 @@
         }
 
 
-        function debug(xhttp) {
+        // function debug(xhttp) {
 
-            gpx = new gpxParser();
-            gpx.parse(xhttp.responseText);
-            gpx.waypoints.forEach(function (wpt) {
+        //     gpx = new gpxParser();
+        //     gpx.parse(xhttp.responseText);
+        //     gpx.waypoints.forEach(function (wpt) {
 
-                console.log("wpt " + wpt.lat);
-            });
-        }
+        //         console.log("wpt " + wpt.lat);
+        //     });
+        // }
     </script>
 </body>
 

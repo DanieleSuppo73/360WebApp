@@ -122,17 +122,17 @@ div {
 <div class="container">
 
     <div id="player">
-        <!-- <button onclick="fadeBillboard()">TEST</button> -->
+        <!-- <button onclick="loadGPX()">TEST</button> -->
       <div id="playerOverlay">
           <p id="playerMessage">Message</p>
           <div id="playerPoster">
             <div id="playerTitleBackground">
-              <img id="playerTitleBackgroundImage" src="gradient.png" alt="Snow">
+              <img id="playerTitleBackgroundImage" src="images/gradient.png" alt="Snow">
               <div id="playerTitle">
                 <p id="title" style="font-size:200%; line-height: 0%;"></p>
                 <p id="subtitle" style="font-size:100%;"></p>
               </div>
-              <img src="360_icon.png" style="width: 60px; height : 30px; bottom: 30px; right: 40px; position: absolute">
+              <img src="images/360_icon.png" style="width: 60px; height : 30px; bottom: 30px; right: 40px; position: absolute">
               
             </div>
         </div>   
@@ -144,9 +144,11 @@ div {
 
 </div>
 
-<script src="playerController.js"></script>
-<script src="mapController.js"></script>
-<script src="myScript.js"></script>
+<script src="src/gpx-parser.js"></script>
+<script src="src/playerController.js"></script>
+<script src="src/mapController.js"></script>
+<script src="src/myScript.js"></script>
+
 
  
 </body>
