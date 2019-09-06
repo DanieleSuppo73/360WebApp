@@ -151,6 +151,25 @@ function drawPolylineOnTerrain(coordinates, useHeight = false, clamp = false) {
 }
 
 
+/// draw a polyline from an array of coordinates
+function drawPolyline(coordinates) {
+
+    viewer.entities.add({
+        polyline: {
+            positions: Cesium.Cartesian3.fromDegreesArrayHeights(coordinates),
+            clampToGround: false,
+            width: 5,
+            material: new Cesium.PolylineOutlineMaterialProperty({
+                color: Cesium.Color.ORANGE,
+                outlineWidth: 2,
+                outlineColor: Cesium.Color.BLACK
+            })
+        }
+    });
+}
+
+
+
 function getCameraInfo() {
     console.log("position: " + mapCamera.positionWC);
     console.log("heading: " + Cesium.Math.toDegrees(mapCamera.heading));
@@ -160,19 +179,18 @@ function getCameraInfo() {
 
 
 
-/// get the elevation from an array of coordinates (lng, lat, lng, lat, ...)
-function getTerrainHeight(coordinates) {
+/// return the cartographic position with elevation
+/// from an array of coordinates (lng, lat, lng, lat, ...)
+function getTerrainHeight(coordinates, callback) {
     var positions = [];
     for (i = 0; i < coordinates.length; i += 2) {
         positions.push(Cesium.Cartographic.fromDegrees(coordinates[i], coordinates[i + 1]));
     }
 
-    var promise = Cesium.sampleTerrain(terrainProvider, 11, positions);
+    var promise = Cesium.sampleTerrainMostDetailed(terrainProvider, positions);
     Cesium.when(promise, function (updatedPositions) {
         // positions[0].height and positions[1].height have been updated.
         // updatedPositions is just a reference to positions.
-        for (i = 0; i < positions.length; i++) {
-            console.log(positions[i].height);
-        }
+        callback(positions);
     });
 }

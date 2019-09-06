@@ -30,7 +30,7 @@ function convertTimeCodeToSeconds(timeString, framerate) {
 loadMainData();
 
 /// Load main xml data
-function loadMainData(){
+function loadMainData() {
   loadDoc("data/main.xml", function (xml) {
     var i;
     var xmlDoc = xml.responseXML;
@@ -41,7 +41,7 @@ function loadMainData(){
     var track = [];
     var x = xmlDoc.getElementsByTagName("TRACK");
     for (i = 0; i < x.length; i++) {
-        track.push({
+      track.push({
         gpxUrl: x[i].getElementsByTagName("GPX_URL")[0].childNodes[0].nodeValue,
         name: x[i].getElementsByTagName("NAME")[0].childNodes[0].nodeValue,
       });
@@ -50,28 +50,53 @@ function loadMainData(){
     playerSetTitle(title, subtitle);
   });
 
-  
+
 }
 
 
 
 
 /// Load GPX and draw polyline
+var coordinates = [];
 function loadGPX() {
   loadDoc("data/Alessandria_20190620124553.gpx", function (xhttp) {
-
     gpx = new gpxParser();
     gpx.parse(xhttp.responseText);
 
-    var coordinates = [];
     gpx.waypoints.forEach(function (wpt) {
       //coordinates.push(wpt.lon, wpt.lat, wpt.ele); // push with elevation
       coordinates.push(wpt.lon, wpt.lat); // push without elevation
     });
-    
+
     /// draw polyline
-    drawPolylineOnTerrain(coordinates);
+    //drawPolylineOnTerrain(coordinates);
+
+    
+    getTerrainHeight(coordinates, temp);
+    
   });
+}
+
+
+function temp(pos){
+  
+  /// add the height from cartesian to the array of log lat coordinates
+  i = 0;
+  ii = 0;
+
+  while (i <= coordinates.length) {
+      i += 2;
+      if (ii == pos.length){
+        ii = pos.length - 1;
+      }
+      coordinates.splice(i, 0, pos[ii].height);
+      i ++;
+      ii ++;
+  }
+
+  //console.log(coordinates);
+  coordinates.pop();
+  drawPolyline(coordinates);
 }
 
 
@@ -81,7 +106,7 @@ var playerMarkers = [];
 
 loadMarkers();
 
-function loadMarkers(){
+function loadMarkers() {
   loadDoc("data/markers.xml", function (xml) {
     var i;
     var xmlDoc = xml.responseXML;
