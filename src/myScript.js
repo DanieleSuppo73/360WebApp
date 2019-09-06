@@ -56,8 +56,7 @@ function loadMainData(){
 
 
 
-
-/// Load GPX
+/// Load GPX and draw polyline
 function loadGPX() {
   loadDoc("data/Alessandria_20190620124553.gpx", function (xhttp) {
 
@@ -66,7 +65,8 @@ function loadGPX() {
 
     var coordinates = [];
     gpx.waypoints.forEach(function (wpt) {
-      coordinates.push(wpt.lon, wpt.lat, wpt.ele);
+      //coordinates.push(wpt.lon, wpt.lat, wpt.ele); // push with elevation
+      coordinates.push(wpt.lon, wpt.lat); // push without elevation
     });
     
     /// draw polyline
