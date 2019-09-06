@@ -126,10 +126,12 @@ function fadeBillboard(element, callback = null) {
 
 
 /// draw a polyline from an array of coordinates
-function drawPolylineOnTerrain(coordinates, useHeight = false, clamp = false) {
+function drawPolyline(coordinates, useHeight = false, clamp = false) {
 
-    if (!Cesium.Entity.supportsPolylinesOnTerrain(viewer.scene)) {
+    if (clamp && !Cesium.Entity.supportsPolylinesOnTerrain(viewer.scene)) {
         console.log('Polylines on terrain are not supported on this platform');
+        alert('Polylines on terrain are not supported on this platform');
+        clamp = false;
     }
 
     var pos = [];
@@ -151,22 +153,7 @@ function drawPolylineOnTerrain(coordinates, useHeight = false, clamp = false) {
 }
 
 
-/// draw a polyline from an array of coordinates
-function drawPolyline(coordinates) {
 
-    viewer.entities.add({
-        polyline: {
-            positions: Cesium.Cartesian3.fromDegreesArrayHeights(coordinates),
-            clampToGround: false,
-            width: 5,
-            material: new Cesium.PolylineOutlineMaterialProperty({
-                color: Cesium.Color.ORANGE,
-                outlineWidth: 2,
-                outlineColor: Cesium.Color.BLACK
-            })
-        }
-    });
-}
 
 
 
@@ -181,7 +168,7 @@ function getCameraInfo() {
 
 /// return the cartographic position with elevation
 /// from an array of coordinates (lng, lat, lng, lat, ...)
-function getTerrainHeight(coordinates, callback) {
+function getCartographicPosition(coordinates, callback) {
     var positions = [];
     for (i = 0; i < coordinates.length; i += 2) {
         positions.push(Cesium.Cartographic.fromDegrees(coordinates[i], coordinates[i + 1]));

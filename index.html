@@ -88,10 +88,24 @@ div {
 }
 
 #map {
+  position: relative;
   float:right;
   width:35%;
   height: 100%;
 }
+
+#mapOverlay{
+  z-index: 2;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  }
+    .mapButtons{
+      pointer-events: auto;
+    }
 
 
 @media screen and (max-width:400px) {
@@ -122,9 +136,6 @@ div {
 <div class="container">
 
     <div id="player">
-        <!-- <button onclick="getCameraInfo()">Get camera position and orientation</button> -->
-        <button onclick="loadGPX()">draw polyline</button>
-        
       <div id="playerOverlay">
           <p id="playerMessage">Message</p>
           <div id="playerPoster">
@@ -141,8 +152,15 @@ div {
       </div>
     </div>
 
+
+    
     <div id="map">
+      <div id="mapOverlay">
+          <button class="mapButtons" onclick="loadGPX()">Create polyline from gpx</button>
+          <button class="mapButtons" onclick="getCameraInfo()">Get camera info</button>
+      </div>
     </div>
+    
 
 </div>
 
@@ -151,7 +169,13 @@ div {
 <script src="src/mapController.js"></script>
 <script src="src/myScript.js"></script>
 
+<!-- <script>
+document.getElementById("myBtn").addEventListener("click", displayDate);
 
+function displayDate() {
+  console.log(Date());
+}
+</script> -->
  
 </body>
 </html>

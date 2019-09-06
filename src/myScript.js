@@ -58,6 +58,7 @@ function loadMainData() {
 
 /// Load GPX and draw polyline
 var coordinates = [];
+
 function loadGPX() {
   loadDoc("data/Alessandria_20190620124553.gpx", function (xhttp) {
     gpx = new gpxParser();
@@ -71,32 +72,33 @@ function loadGPX() {
     /// draw polyline
     //drawPolylineOnTerrain(coordinates);
 
-    
-    getTerrainHeight(coordinates, temp);
-    
+
+    getCartographicPosition(coordinates, temp);
+
   });
 }
 
 
-function temp(pos){
-  
+function temp(pos) {
   /// add the height from cartesian to the array of log lat coordinates
   i = 0;
   ii = 0;
-
   while (i <= coordinates.length) {
-      i += 2;
-      if (ii == pos.length){
-        ii = pos.length - 1;
-      }
-      coordinates.splice(i, 0, pos[ii].height);
-      i ++;
-      ii ++;
+    i += 2;
+    if (ii == pos.length) {
+      ii = pos.length - 1;
+    }
+    coordinates.splice(i, 0, pos[ii].height);
+    i++;
+    ii++;
   }
 
-  //console.log(coordinates);
+  /// remove last element (...?)
   coordinates.pop();
-  drawPolyline(coordinates);
+
+  /// draw polyline
+  useHeight = true;
+  drawPolyline(coordinates, useHeight);
 }
 
 
