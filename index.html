@@ -1,181 +1,194 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
-<meta charset='utf-8' />
-<title>test</title>
-<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <meta charset='utf-8' />
+  <title>test</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 
-<script src="https://cesiumjs.org/releases/1.60/Build/Cesium/Cesium.js"></script>
-<link href="https://cesiumjs.org/releases/1.60/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+  <script src="https://cesiumjs.org/releases/1.60/Build/Cesium/Cesium.js"></script>
+  <link href="https://cesiumjs.org/releases/1.60/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
 
-<script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
-<script src="https://cdn.rawgit.com/thiagopnts/clappr-video360/master/dist/clappr-video360.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
+  <script src="https://cdn.rawgit.com/thiagopnts/clappr-video360/master/dist/clappr-video360.min.js"></script>
 
-<style>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
-@font-face {
-   font-family: acuminBold;
-   src: url(Acumin-BdPro.otf);
-}
+  <style>
+    @font-face {
+      font-family: acuminBold;
+      src: url(Acumin-BdPro.otf);
+    }
 
-body{
-	margin: 5px;
-}
+    body {
+      margin: 5px;
+    }
 
-div {
-	box-sizing: border-box;
-}
+    div {
+      box-sizing: border-box;
+    }
 
-.container{
-	max-width: 1200px;
-	height: 400px;
-	margin-left: auto;
-	margin-right: auto;
-}
+    .container {
+      max-width: 1200px;
+      height: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
 
-#player {
-  float:left;
-  width:63%;
-  height: 100%;
-  position: relative;
-}
+    #player {
+      float: left;
+      width: 63%;
+      height: 100%;
+      position: relative;
+    }
 
-#playerOverlay{
-  z-index: 2;
-  height: 100%;
-  width: 100%;
-  top: 0;
-  left: 0;
-  position: absolute;
-  padding: 0;
-  pointer-events: none;
-}
+    #playerOverlay {
+      z-index: 2;
+      height: 100%;
+      width: 100%;
+      top: 0;
+      left: 0;
+      position: absolute;
+      padding: 0;
+      pointer-events: none;
+    }
 
-#playerTitleBackground{
-  position: absolute;
-  height: 100%;
-  width: 100%;
-}
+    #playerTitleBackground {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+    }
 
-#playerTitleBackgroundImage{
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width:100%;
-  height:50%;
-/*
+    #playerTitleBackgroundImage {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      /*
   background-color: transparent;
   background-repeat: repeat;*/
 
-  opacity: 0.6;
-}
+      opacity: 0.6;
+    }
 
-#playerTitle{
-  position: absolute;
-  color: white;
-  bottom: 10px;
-  left: 40px;
-  font-family: acuminBold;
-}
+    #playerTitle {
+      position: absolute;
+      color: white;
+      bottom: 10px;
+      left: 40px;
+      font-family: acuminBold;
+    }
 
-#playerMessage{
-  position: absolute;
-  top: 0px;
-  left: 40px;
-  color: red;
-  font-size:200%;
-  opacity: 0;
-}
+    #playerMessage {
+      position: absolute;
+      top: 0px;
+      left: 40px;
+      color: red;
+      font-size: 200%;
+      opacity: 0;
+    }
 
-#map {
-  position: relative;
-  float:right;
-  width:35%;
-  height: 100%;
-}
+    #map {
+      position: relative;
+      float: right;
+      width: 35%;
+      height: 100%;
+    }
 
-#mapOverlay{
-  z-index: 2;
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  }
-    .mapButtons{
+    #mapOverlay {
+      z-index: 2;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .mapButtons {
       pointer-events: auto;
     }
 
 
-@media screen and (max-width:400px) {
-  .container{
-    height: 200px;
-  }
-  #player, #map {
-    width:100%;
-  }
-  #map {
-    margin-top: 30px;
-  }
-}
+    .cesium-widget-credits {
+      display: none !important;
+    }
 
 
-</style>
+
+    @media screen and (max-width:400px) {
+      .container {
+        height: 200px;
+      }
+
+      #player,
+      #map {
+        width: 100%;
+      }
+
+      #map {
+        margin-top: 30px;
+      }
+    }
+  </style>
 </head>
 
 
 
 <body>
 
-<div id="mainTitle">
-  <p style="text-align: center; font-family: acuminBold; font-size:200%;">My test</p>
-</div>
+  <div id="mainTitle">
+    <p style="text-align: center; font-family: acuminBold; font-size:200%;">My test</p>
+  </div>
 
 
-<div class="container">
+  <div class="container">
 
     <div id="player">
       <div id="playerOverlay">
-          <p id="playerMessage">Message</p>
-          <div id="playerPoster">
-            <div id="playerTitleBackground">
-              <img id="playerTitleBackgroundImage" src="images/gradient.png" alt="Snow">
-              <div id="playerTitle">
-                <p id="title" style="font-size:200%; line-height: 0%;"></p>
-                <p id="subtitle" style="font-size:100%;"></p>
-              </div>
-              <img src="images/360_icon.png" style="width: 60px; height : 30px; bottom: 30px; right: 40px; position: absolute">
-              
+        <p id="playerMessage">Message</p>
+        <div id="playerPoster">
+          <div id="playerTitleBackground">
+            <img id="playerTitleBackgroundImage" src="images/gradient.png" alt="Snow">
+            <div id="playerTitle">
+              <p id="title" style="font-size:200%; line-height: 0%;"></p>
+              <p id="subtitle" style="font-size:100%;"></p>
             </div>
-        </div>   
+            <img src="images/360_icon.png"
+              style="width: 60px; height : 30px; bottom: 30px; right: 40px; position: absolute">
+
+          </div>
+        </div>
       </div>
     </div>
 
 
-    
+
     <div id="map">
       <div id="mapOverlay">
-          <button class="mapButtons" onclick="loadGPX()">Create polyline from gpx</button>
-          <button class="mapButtons" onclick="getCameraInfo()">Get camera info</button>
+        <button class="mapButtons" onclick="loadGPX()">Create polyline from gpx</button>
+        <button class="mapButtons" onclick="getCameraInfo()">Get camera info</button>
       </div>
     </div>
-    
 
-</div>
 
-<script src="src/gpx-parser.js"></script>
-<script src="src/playerController.js"></script>
-<script src="src/mapController.js"></script>
-<script src="src/myScript.js"></script>
+  </div>
 
-<!-- <script>
+  <script src="src/gpx-parser.js"></script>
+  <script src="src/playerController.js"></script>
+  <script src="src/mapController.js"></script>
+  <script src="src/myScript.js"></script>
+  <script src="src/jqueryTmp.js"></script>
+
+  <!-- <script>
 document.getElementById("myBtn").addEventListener("click", displayDate);
 
 function displayDate() {
   console.log(Date());
 }
 </script> -->
- 
+
 </body>
+
 </html>

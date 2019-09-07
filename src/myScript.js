@@ -27,9 +27,15 @@ function convertTimeCodeToSeconds(timeString, framerate) {
 
 
 
+
+
+///////////////////////////////
+/// Load main xml data
+/// with all the starting informations
+/// to setup everything
+///////////////////////////////
 loadMainData();
 
-/// Load main xml data
 function loadMainData() {
   loadDoc("data/main.xml", function (xml) {
     var i;
@@ -73,13 +79,17 @@ function loadGPX() {
     //drawPolylineOnTerrain(coordinates);
 
 
-    getCartographicPosition(coordinates, temp);
+    getCartographicPosition(coordinates, createPolylineOnTerrain);
 
   });
 }
 
 
-function temp(pos) {
+
+////////////////////////////
+/// Create a 3d polyline from array with lng, lat and real terrain height
+////////////////////////////
+function createPolylineOnTerrain(pos) {
   /// add the height from cartesian to the array of log lat coordinates
   i = 0;
   ii = 0;
@@ -103,9 +113,11 @@ function temp(pos) {
 
 
 
-/// Load markers
-var playerMarkers = [];
 
+////////////////////////////
+/// Load markers
+////////////////////////////
+var playerMarkers = [];
 loadMarkers();
 
 function loadMarkers() {
@@ -122,7 +134,20 @@ function loadMarkers() {
         latitude: x[i].getElementsByTagName("LATITUDE")[0].childNodes[0].nodeValue
       });
     }
-    setInterval(chechForMarker, 500);
+    setInterval(checkForMarker, 500);
+
+
+    /// create a placeholder for each marker
+    playerMarkers.forEach(function (marker) {
+      createPlaceholder(marker.longitude, marker.latitude);
+    });
+
+    /// set opacity to 0 for all placeholders
+    placeholders.forEach(function (placeholder) {
+      placeholder.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, 0.1);
+    });
+
+
   });
 }
 
@@ -130,9 +155,11 @@ function loadMarkers() {
 
 
 
-/// check for marker
-/// during playback
-var playerMarkerIndexStart = 0;
+
+////////////////////////////
+/// check for marker during playback
+////////////////////////////
+var playerMarkerIndexStart = -1;
 
 Player.listenTo(Player, Clappr.Events.PLAYER_SEEK, resetCounter);
 
@@ -141,21 +168,22 @@ function resetCounter() {
   console.log("RESET");
 }
 
-function chechForMarker() {
+function checkForMarker() {
   if (playerMarkers.length == 1 || !playerPlaying) return;
 
-  for (i = playerMarkerIndexStart; i < playerMarkers.length; i++) {
+  for (i = 0; i < playerMarkers.length; i++) {
 
-    if (playerTime >= playerMarkers[i].time) {
-      playerMarkerIndexStart = i + 1;
+    if (i < playerMarkers.length - 1 && playerTime >= playerMarkers[i].time &&
+      playerTime < playerMarkers[i + 1].time && playerMarkerIndexStart != i) {
 
-      if ((i < playerMarkers.length - 1 && playerTime <= playerMarkers[i + 1].time) ||
-        (i == playerMarkers.length - 1)) {
-        DisplayPlayerMessage("marker:" + i + " - " + playerMarkers[i].title);
-        console.log("linkato su marker : " + i + " - " + playerMarkers[i].title);
-        onMarkerReached(i);
-        break;
-      }
+      playerMarkerIndexStart = i;
+      onMarkerReached(i);
+
+    } else if (i == playerMarkers.length - 1 && playerTime >= playerMarkers[i].time &&
+      playerMarkerIndexStart != i) {
+
+      playerMarkerIndexStart = i;
+      onMarkerReached(i);
     }
   }
 }
@@ -163,14 +191,37 @@ function chechForMarker() {
 
 
 
+////////////////////////////
+/// when a marker is detected during playing do this
+////////////////////////////
+var oldMarkerIndex;
 
-/// when a marker is detected during playing
-/// do this
 function onMarkerReached(index) {
-  //flyMapTo(playerMarkers[index].longitude, playerMarkers[index].latitude);
 
-  addMapBillboard(playerMarkers[index].longitude, playerMarkers[index].latitude, flyMapToPin);
+  /// debug
+  DisplayPlayerMessage("marker:" + index + " - " + playerMarkers[index].title);
+  console.log("linkato su marker : " + index + " - " + playerMarkers[index].title);
+  console.log("player:" + playerTime + " - marker:" + playerMarkers[index].time);
+
+  /// fade in-out old placeholders
+  if (oldMarkerIndex != null) {
+    // fadeOutBillboard(placeholders[oldMarkerIndex]);
+    // console.log("fadeout: " + oldMarkerIndex);
+    console.log("spengo " + oldMarkerIndex);
+    placeholders[oldMarkerIndex].billboard.color = new Cesium.Color(1.0, 1.0, 1.0, 0);
+  }
+
+  /// fade-in new placeholder
+  // fadeInBillboard(placeholders[index]);
+  // console.log("fadein: " + index);
+  console.log("accendo " + index);
+  placeholders[index].billboard.color = new Cesium.Color(1.0, 1.0, 1.0, 1);
+  oldMarkerIndex = index;
+
+
+  flyMapToElement(placeholders[index]);
 }
+
 
 
 function DisplayPlayerMessage(value) {

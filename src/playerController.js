@@ -1,26 +1,25 @@
-
 var playerPlaying = false;
 var playerTime;
 
 /// Player
 var Player = new Clappr.Player({
-    //source: 'https://player.vimeo.com/external/356158599.hd.mp4?s=a65bd6b347c2304168f064aa36ff6b72bbe68d49&profile_id=175',
-    source: 'video/Lido%20-%20Pellestrina_026.mp4',
-    plugins: {
-        container: [Video360],
-      
-    },
-    width: "100%",
-    height: "100%",
-    parentId: '#player',
-    poster: 'Lido_Pellestrina_poster_blank.jpg',
+  //source: 'https://player.vimeo.com/external/356158599.hd.mp4?s=a65bd6b347c2304168f064aa36ff6b72bbe68d49&profile_id=175',
+  source: 'video/Lido%20-%20Pellestrina_026.mp4',
+  plugins: {
+    container: [Video360],
+
+  },
+  width: "100%",
+  height: "100%",
+  parentId: '#player',
+  poster: 'Lido_Pellestrina_poster_blank.jpg',
 });
 
-Player.getPlugin('click_to_pause').disable();   
+Player.getPlugin('click_to_pause').disable();
 
 
 /// set the title on the poster
-function playerSetTitle(title, subtitle){
+function playerSetTitle(title, subtitle) {
   document.getElementById("title").innerHTML = title;
   document.getElementById("subtitle").innerHTML = subtitle;
 }
@@ -28,10 +27,11 @@ function playerSetTitle(title, subtitle){
 
 /// get playing time
 setInterval(GetPlayerTime, 200);
-function GetPlayerTime(){
-    if (playerPlaying){
-      playerTime = Player.getCurrentTime();
-    }
+
+function GetPlayerTime() {
+  if (playerPlaying) {
+    playerTime = Player.getCurrentTime();
+  }
 }
 
 
@@ -41,21 +41,36 @@ Player.listenTo(Player, Clappr.Events.PLAYER_PAUSE, OnPlayerPaused);
 Player.listenTo(Player, Clappr.Events.PLAYER_SEEK, OnPlayerSeek);
 
 
-function OnPlayerStarted(){
-	console.log("playing!");
-  playerPlaying = true;
-  var id = document.getElementById("playerPoster");
-  id.style.opacity = 0;
-  id.style.transition = "opacity " + 1 + "s";
-  id.style.WebkitTransition = "opacity " + 1 + "s";
+function OnPlayerStarted() {
+  /// if we where seeking wait a bit before to set
+  /// playerPlaying = true, because it does not get immediately
+  /// the time of the video
+  if (isSeeking) {
+    isSeeking = false;
+    setTimeout(function () {
+      console.log("playing!");
+      playerPlaying = true;
+    }, 500);
+  }
+  else{
+    console.log("playing!");
+    playerPlaying = true;
+    var id = document.getElementById("playerPoster");
+    id.style.opacity = 0;
+    id.style.transition = "opacity " + 1 + "s";
+    id.style.WebkitTransition = "opacity " + 1 + "s";
+  }
 }
 
-function OnPlayerPaused(){
+function OnPlayerPaused() {
   playerPlaying = false;
   console.log("paused");
 }
 
-function OnPlayerSeek(){
+var isSeeking = false;
+
+function OnPlayerSeek() {
+  isSeeking = true;
   playerPlaying = false;
   console.log("seek");
 }

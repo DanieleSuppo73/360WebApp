@@ -20,6 +20,12 @@ var viewer = new Cesium.Viewer('map', {
 
 
 
+
+
+
+
+
+
 /// Map color correction
 var imageryLayers = viewer.imageryLayers;
 var layer = imageryLayers.get(0);
@@ -34,19 +40,19 @@ var mapCamera = scene.camera;
 /// Set start map position and orientation
 
 
-var defaultHeight = 600;
-flyMapTo(8.921944969520226, 44.80576049196282, defaultHeight, Cesium.Math.toRadians(200.0),
-    Cesium.Math.toRadians(-50.0), 0);
+// var defaultHeight = 600;
+// flyMapTo(8.921944969520226, 44.80576049196282, defaultHeight, Cesium.Math.toRadians(200.0),
+//     Cesium.Math.toRadians(-50.0), 0);
 
 
-// viewer.camera.setView({
-//     destination : new Cesium.Cartesian3(4404792.475707513, 962828.6766361801, 4508398.182356733),
-//     orientation: {
-//         heading : Cesium.Math.toRadians(353.5990272815255), // east, default value is 0.0 (north)
-//         pitch : Cesium.Math.toRadians(-39.021508523873536),    // default value (looking down)
-//         roll : Cesium.Math.toRadians(6.28270206832835)                            
-//     }
-// });
+viewer.camera.setView({
+    destination : new Cesium.Cartesian3(4404792.475707513, 962828.6766361801, 4508398.182356733),
+    orientation: {
+        heading : Cesium.Math.toRadians(353.5990272815255), // east, default value is 0.0 (north)
+        pitch : Cesium.Math.toRadians(-39.021508523873536),    // default value (looking down)
+        roll : Cesium.Math.toRadians(6.28270206832835)                            
+    }
+});
 
 
 
@@ -66,24 +72,25 @@ function flyMapTo(longitude, latitude, height = mapCamera.positionCartographic.h
 };
 
 
-/// add a billboard
-var pin;
 
-function addMapBillboard(longitude, latitude, callback = null) {
-    if (pin == null) {
-        pin = viewer.entities.add({
-            position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
-            billboard: {
-                image: 'images/pin_icon.png',
-                width: 64,
-                height: 64,
-                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-                heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
-            }
-        });
-    } else {
-        pin.position = Cesium.Cartesian3.fromDegrees(longitude, latitude);
-    }
+
+
+//////////////////////////////
+/// Create placeholder on the map
+//////////////////////////////
+var placeholders = [];
+function createPlaceholder(longitude, latitude, callback = null) {
+
+    placeholders.push(viewer.entities.add({
+        position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
+        billboard: {
+            image: 'images/pin_icon.png',
+            width: 64,
+            height: 64,
+            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+            heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
+        }
+    }));
 
     if (callback != null) {
         callback();
@@ -91,35 +98,139 @@ function addMapBillboard(longitude, latitude, callback = null) {
 }
 
 
-function flyMapToPin() {
+
+
+
+
+//////////////////////////////
+/// Fly map to element
+//////////////////////////////
+function flyMapToElement(element) {
     heading = mapCamera.heading;
     pitch = mapCamera.pitch;
     range = 500;
-    viewer.flyTo(pin, {
+    viewer.flyTo(element, {
         offset: new Cesium.HeadingPitchRange(heading, pitch, range)
     });
 }
 
-function fadeBillboard(element, callback = null) {
 
-    // pin.position = Cesium.Cartesian3.fromDegrees(12.366305, 45.404293);
 
-    // pin.billboard.height = 150;
-    // pin.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, 0.5);
 
-    if (pin == null) {
-        console.log("NULLO!!");
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+// /// add a billboard
+// var pin;
+
+// function addMapBillboard(longitude, latitude, callback = null) {
+//     if (pin == null) {
+//         pin = viewer.entities.add({
+//             position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
+//             billboard: {
+//                 image: 'images/pin_icon.png',
+//                 width: 64,
+//                 height: 64,
+//                 verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+//                 heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
+//             }
+//         });
+//     } else {
+//         pin.position = Cesium.Cartesian3.fromDegrees(longitude, latitude);
+//     }
+
+//     if (callback != null) {
+//         callback();
+//     }
+// }
+
+
+// function flyMapToPin() {
+//     heading = mapCamera.heading;
+//     pitch = mapCamera.pitch;
+//     range = 500;
+//     viewer.flyTo(pin, {
+//         offset: new Cesium.HeadingPitchRange(heading, pitch, range)
+//     });
+// }
+
+var elementToFadeOut;
+var isFadingOut;
+var fadeOut;
+function fadeOutBillboard(element, callback = null) {
+    elementToFadeOut = element;
+    
+    // if (elementToFadeOut == elementToFadeIn){
+    //     console.log("CHIAMATO FADE-IN SULLO STESSO");
+    //     isFadingIn = false;
+    //     clearInterval(fadeIn);
+    //     elementToFadeIn = null;
+    // }
+
 
     var op = 1; // initial opacity
-    var timer = setInterval(function () {
-        if (op <= 0.1) {
-            clearInterval(timer);
+    isFadingOut = true;
+    fadeOut = setInterval(function () {
+        if (op <= 0.05) {
+            isFadingOut = false;
+            clearInterval(fadeOut);
+            if (callback != null) callback();
+
+        }
+        if (isFadingOut){
+            element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, op);
+            op -= op * 0.1;
+        }
+        else{
+            //element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, 0);
+            elementToFadeOut = null;
+        }
+    }, 10);
+}
+
+
+
+var elementToFadeIn;
+var isFadingIn;
+var fadeIn;
+function fadeInBillboard(element, callback = null) {
+    elementToFadeIn = element;
+
+    // if (elementToFadeIn == elementToFadeOut){
+    //     console.log("CHIAMATO FADE-OUT SULLO STESSO");
+    //     isFadingOut = false;
+    //     clearInterval(fadeOut);
+    //     elementToFadeIn = null;
+    // }
+
+    var op = 0.01; // initial opacity
+    isFadingIn = true;
+    fadeIn = setInterval(function () {
+        if (op >= 0.95) {
+            isFadingIn = false;
+            clearInterval(fadeIn);
             if (callback != null) callback();
         }
-        pin.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, op);
-        op -= op * 0.1;
-    }, 50);
+        if (isFadingIn){
+            element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, op);
+            op += op * 0.1;
+        }
+        else{
+            element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, 1);
+            elementToFadeIn = null;
+        }
+        
+    }, 10);
 }
 
 
