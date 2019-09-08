@@ -20,7 +20,7 @@ $(document).ready(function () {
 
   var zoom = 0;
   var camera = viewer.scene.camera;
-
+  var timer;
 
 
   var cameraProperties = {
@@ -37,10 +37,15 @@ $(document).ready(function () {
 
 
   $("#zoomIn").mousedown(function () {
+    if (timer != null) {
+      clearInterval(timer);
+      timer = null;
+      return false;
+    }
     timer = setInterval(function () {
       let h = cameraProperties.getHeight();
       if (h >= cameraProperties.minHeight) {
-        zoom = Math.pow(h , 1.25) * cameraProperties.zoomRate;
+        zoom = Math.pow(h, 1.25) * cameraProperties.zoomRate;
         viewer.scene.camera.moveForward(zoom);
       }
     }, 10);
@@ -48,21 +53,28 @@ $(document).ready(function () {
   })
   $("#zoomIn").mouseup(function () {
     clearInterval(timer);
+    timer = null;
     return false;
   })
   $("#zoomIn").mouseleave(function () {
     clearInterval(timer);
+    timer = null;
     return false;
   })
-  
+
 
 
 
   $("#zoomOut").mousedown(function () {
+    if (timer != null) {
+      clearInterval(timer);
+      timer = null;
+      return false;
+    }
     timer = setInterval(function () {
       let h = cameraProperties.getHeight();
       if (h <= cameraProperties.maxHeight) {
-        zoom = Math.pow(h , 1.25) * cameraProperties.zoomRate;
+        zoom = Math.pow(h, 1.25) * cameraProperties.zoomRate;
         viewer.scene.camera.moveBackward(zoom);
       }
     }, 10);
@@ -70,9 +82,15 @@ $(document).ready(function () {
   })
   $("#zoomOut").mouseup(function () {
     clearInterval(timer);
+    timer = null;
     return false;
   })
-  
+  $("#zoomOut").mouseleave(function () {
+    clearInterval(timer);
+    timer = null;
+    return false;
+  })
+
 
 
 
