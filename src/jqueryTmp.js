@@ -24,10 +24,10 @@ $(document).ready(function () {
 
 
   var cameraProperties = {
-    minHeight: 0.4,
-    maxHeight: 15,
+    minHeight: 0.4, // in Km
+    maxHeight: 35, // in Km
     zoomRate: 7,
-    getHeight: function () {
+    get height() { // in Km
       var cartographic = new Cesium.Cartographic();
       var ellipsoid = viewer.scene.mapProjection.ellipsoid;
       ellipsoid.cartesianToCartographic(camera.positionWC, cartographic);
@@ -37,13 +37,14 @@ $(document).ready(function () {
 
 
   $("#zoomIn").mousedown(function () {
+    $(this).css('opacity', '1');
     if (timer != null) {
       clearInterval(timer);
       timer = null;
       return false;
     }
     timer = setInterval(function () {
-      let h = cameraProperties.getHeight();
+      let h = cameraProperties.height;
       if (h >= cameraProperties.minHeight) {
         zoom = Math.pow(h, 1.25) * cameraProperties.zoomRate;
         viewer.scene.camera.moveForward(zoom);
@@ -52,11 +53,13 @@ $(document).ready(function () {
     return false;
   })
   $("#zoomIn").mouseup(function () {
+    $(this).css('opacity', '0.7');
     clearInterval(timer);
     timer = null;
     return false;
   })
   $("#zoomIn").mouseleave(function () {
+    $(this).css('opacity', '0.7');
     clearInterval(timer);
     timer = null;
     return false;
@@ -66,13 +69,14 @@ $(document).ready(function () {
 
 
   $("#zoomOut").mousedown(function () {
+    $(this).css('opacity', '1');
     if (timer != null) {
       clearInterval(timer);
       timer = null;
       return false;
     }
     timer = setInterval(function () {
-      let h = cameraProperties.getHeight();
+      let h = cameraProperties.height;
       if (h <= cameraProperties.maxHeight) {
         zoom = Math.pow(h, 1.25) * cameraProperties.zoomRate;
         viewer.scene.camera.moveBackward(zoom);
@@ -81,11 +85,13 @@ $(document).ready(function () {
     return false;
   })
   $("#zoomOut").mouseup(function () {
+    $(this).css('opacity', '0.7');
     clearInterval(timer);
     timer = null;
     return false;
   })
   $("#zoomOut").mouseleave(function () {
+    $(this).css('opacity', '0.7');
     clearInterval(timer);
     timer = null;
     return false;

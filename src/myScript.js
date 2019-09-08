@@ -133,7 +133,7 @@ function loadMarkers() {
         time: convertTimeCodeToSeconds(timecode, 25),
         title: x[i].getElementsByTagName("TITLE")[0].childNodes[0].nodeValue,
         longitude: x[i].getElementsByTagName("LONGITUDE")[0].childNodes[0].nodeValue,
-        latitude: x[i].getElementsByTagName("LATITUDE")[0].childNodes[0].nodeValue
+        latitude: x[i].getElementsByTagName("LATITUDE")[0].childNodes[0].nodeValue,
       });
     }
     setInterval(checkForMarker, 500);
@@ -148,7 +148,7 @@ function loadMarkers() {
     /// add billboardImage method for each placeholder
     placeholders.forEach(function (placeholder) {
       placeholder.billboardImage = new BillboardImage(placeholder);
-      placeholder.billboardImage.setOpacity(0);
+      placeholder.billboardImage.setOpacity(0.001);
     });
   });
 }
@@ -205,6 +205,7 @@ function BillboardImage(element) {
   }
 
   this.fadeIn = function () {
+    console.log("FADE IN " + this);
     isFading = true;
     if (timer != null){
       clearInterval(timer);
@@ -233,7 +234,7 @@ function BillboardImage(element) {
         isFading = false;
         clearInterval(timer);
         timer = null;
-        element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, 0);
+        element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, 0.001);
       }
       if (isFading){
         element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, op);
