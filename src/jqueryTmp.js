@@ -26,6 +26,7 @@ $(document).ready(function () {
   var cameraProperties = {
     minHeight: 0.4,
     maxHeight: 15,
+    zoomRate: 7,
     getHeight: function () {
       var cartographic = new Cesium.Cartographic();
       var ellipsoid = viewer.scene.mapProjection.ellipsoid;
@@ -39,9 +40,8 @@ $(document).ready(function () {
     timer = setInterval(function () {
       let h = cameraProperties.getHeight();
       if (h >= cameraProperties.minHeight) {
-        zoom += h / 100;
+        zoom = Math.pow(h , 1.25) * cameraProperties.zoomRate;
         viewer.scene.camera.moveForward(zoom);
-        console.log(cameraProperties.getHeight() + ' km - ' + h / 100);
       }
     }, 10);
     return false;
@@ -50,15 +50,20 @@ $(document).ready(function () {
     clearInterval(timer);
     return false;
   })
+  $("#zoomIn").mouseleave(function () {
+    clearInterval(timer);
+    return false;
+  })
+  
+
 
 
   $("#zoomOut").mousedown(function () {
     timer = setInterval(function () {
       let h = cameraProperties.getHeight();
       if (h <= cameraProperties.maxHeight) {
-        zoom += h / 100;
+        zoom = Math.pow(h , 1.25) * cameraProperties.zoomRate;
         viewer.scene.camera.moveBackward(zoom);
-        console.log(cameraProperties.getHeight() + ' km - ' + h / 100);
       }
     }, 10);
     return false;
@@ -67,6 +72,7 @@ $(document).ready(function () {
     clearInterval(timer);
     return false;
   })
+  
 
 
 
