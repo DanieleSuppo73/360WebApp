@@ -117,6 +117,7 @@ function createPolylineOnTerrain(pos) {
 ////////////////////////////
 /// Load markers
 ////////////////////////////
+
 var playerMarkers = [];
 loadMarkers();
 
@@ -127,6 +128,7 @@ function loadMarkers() {
     var x = xmlDoc.getElementsByTagName("MARKER");
     for (i = 0; i < x.length; i++) {
       timecode = x[i].getElementsByTagName("TIMECODE")[0].childNodes[0].nodeValue;
+
       playerMarkers.push({
         time: convertTimeCodeToSeconds(timecode, 25),
         title: x[i].getElementsByTagName("TITLE")[0].childNodes[0].nodeValue,
@@ -142,12 +144,12 @@ function loadMarkers() {
       createPlaceholder(marker.longitude, marker.latitude);
     });
 
-    /// set opacity to 0 for all placeholders
+    
+    /// add billboardImage method for each placeholder
     placeholders.forEach(function (placeholder) {
-      placeholder.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, 0.1);
+      placeholder.billboardImage = new BillboardImage(placeholder);
+      placeholder.billboardImage.setOpacity(0);
     });
-
-
   });
 }
 
@@ -191,12 +193,68 @@ function checkForMarker() {
 
 
 
+function BillboardImage(element) {
+  var timer;
+  var fadeTime = 50;
+  var op;
+  var isFading = false;
+
+  this.setOpacity = function(value){
+    op = value;
+    element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, op);
+  }
+
+  this.fadeIn = function () {
+    isFading = true;
+    if (timer != null){
+      clearInterval(timer);
+    }
+    timer = setInterval(function () {
+      if (op >= 0.95){
+        isFading = false;
+        clearInterval(timer);
+        timer = null;
+        element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, 1);
+      }
+      if (isFading){
+        element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, op);
+        op += 0.025;
+        //console.log(element + ": " + op);
+      }
+    }, fadeTime);
+  }
+
+  this.fadeOut = function () {
+    isFading = true;
+    if (timer != null){
+      clearInterval(timer);
+    }
+    timer = setInterval(function () {
+      if (op <= 0.05){
+        isFading = false;
+        clearInterval(timer);
+        timer = null;
+        element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, 0);
+      }
+      if (isFading){
+        element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, op);
+        op -= 0.025;
+        //console.log(element + ": " + op);
+      }
+    }, fadeTime);
+  }
+}
+
+
+
 ////////////////////////////
 /// when a marker is detected during playing do this
 ////////////////////////////
 var oldMarkerIndex;
 
 function onMarkerReached(index) {
+
+  if (index == oldMarkerIndex) return;
 
   /// debug
   DisplayPlayerMessage("marker:" + index + " - " + playerMarkers[index].title);
@@ -205,17 +263,13 @@ function onMarkerReached(index) {
 
   /// fade in-out old placeholders
   if (oldMarkerIndex != null) {
-    // fadeOutBillboard(placeholders[oldMarkerIndex]);
-    // console.log("fadeout: " + oldMarkerIndex);
+    placeholders[oldMarkerIndex].billboardImage.fadeOut();
     console.log("spengo " + oldMarkerIndex);
-    placeholders[oldMarkerIndex].billboard.color = new Cesium.Color(1.0, 1.0, 1.0, 0);
   }
 
   /// fade-in new placeholder
-  // fadeInBillboard(placeholders[index]);
-  // console.log("fadein: " + index);
+  placeholders[index].billboardImage.fadeIn();
   console.log("accendo " + index);
-  placeholders[index].billboard.color = new Cesium.Color(1.0, 1.0, 1.0, 1);
   oldMarkerIndex = index;
 
 
