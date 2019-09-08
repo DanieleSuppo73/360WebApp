@@ -219,7 +219,6 @@ function BillboardImage(element) {
       if (isFading){
         element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, op);
         op += 0.025;
-        //console.log(element + ": " + op);
       }
     }, fadeTime);
   }
@@ -239,7 +238,6 @@ function BillboardImage(element) {
       if (isFading){
         element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, op);
         op -= 0.025;
-        //console.log(element + ": " + op);
       }
     }, fadeTime);
   }
@@ -273,7 +271,7 @@ function onMarkerReached(index) {
   oldMarkerIndex = index;
 
 
-  flyMapToElement(placeholders[index]);
+  mapController.flyToElement(placeholders[index]);
 }
 
 

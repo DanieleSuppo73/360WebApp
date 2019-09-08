@@ -18,9 +18,19 @@ var viewer = new Cesium.Viewer('map', {
 
 });
 
+var scene = viewer.scene;
+var mapCamera = scene.camera;
 
-
-
+var mapController = {
+    flyToElement : function(element){
+        heading = viewer.scene.camera.heading;
+        pitch = viewer.scene.camera.pitch;
+        range = 500;
+        viewer.flyTo(element, {
+            offset: new Cesium.HeadingPitchRange(heading, pitch, range)
+        });
+    }
+}
 
 
 
@@ -33,8 +43,7 @@ layer.brightness = 2;
 //layer.gamma = 1.05;
 
 
-var scene = viewer.scene;
-var mapCamera = scene.camera;
+
 
 
 /// Set start map position and orientation
@@ -84,8 +93,9 @@ function createPlaceholder(longitude, latitude, callback = null) {
     placeholders.push(viewer.entities.add({
         position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
         billboard: {
-            image: 'images/pin_icon.png',
-            width: 64,
+            //image: 'images/pin_icon.png',
+            image: 'images/pin_icon.svg',
+            width: 49,
             height: 64,
             verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
             heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
@@ -102,17 +112,17 @@ function createPlaceholder(longitude, latitude, callback = null) {
 
 
 
-//////////////////////////////
-/// Fly map to element
-//////////////////////////////
-function flyMapToElement(element) {
-    heading = mapCamera.heading;
-    pitch = mapCamera.pitch;
-    range = 500;
-    viewer.flyTo(element, {
-        offset: new Cesium.HeadingPitchRange(heading, pitch, range)
-    });
-}
+// //////////////////////////////
+// /// Fly map to element
+// //////////////////////////////
+// function flyMapToElement(element) {
+//     heading = mapCamera.heading;
+//     pitch = mapCamera.pitch;
+//     range = 500;
+//     viewer.flyTo(element, {
+//         offset: new Cesium.HeadingPitchRange(heading, pitch, range)
+//     });
+// }
 
 
 

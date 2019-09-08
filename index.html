@@ -116,7 +116,7 @@
     }
 
 
-
+    /* if we are on mobile */
     @media screen and (max-width:400px) {
       .container {
         height: 200px;
@@ -129,6 +129,10 @@
 
       #map {
         margin-top: 30px;
+      }
+
+      .mapButtons {
+        display: none;
       }
     }
   </style>
@@ -169,6 +173,14 @@
       <div id="mapOverlay">
         <button class="mapButtons" onclick="loadGPX()">Create polyline from gpx</button>
         <button class="mapButtons" onclick="getCameraInfo()">Get camera info</button>
+        <div id = "mapToolbar" class="mapButtons" style="position: absolute; background-color: white; opacity: 0.5; width: 30px; height:170px; right: 10px; bottom: 10px; padding: 3px">
+          <img id = "zoomIn" src="images/star.svg">
+          <img id = "zoomOut" src="images/star.svg">
+          <img id = "turnLeft" src="images/star.svg">
+          <img id = "turnRight" src="images/star.svg">
+          <img id = "turnUp" src="images/star.svg">
+          <img id = "turnDown" src="images/star.svg">
+        </div>
         <!-- <button class="mapButtons" onclick="test1()">0</button>
         <button class="mapButtons" onclick="test2()">1</button>
         <button class="mapButtons" onclick="test3()">2</button> -->
