@@ -1,6 +1,6 @@
 <MAIN>
     <VIDEO_URL>https://player.vimeo.com/external/347803220.m3u8?s=61a66fd483813c89da138ac578628ca68bb65fe3</VIDEO_URL>
-    <VIDEOMARKERS_URL>https://vr.alicefit.com/_assets/Alessandria/Alessandria_markers.csv</VIDEOMARKERS_URL>
+    <VIDEO_MARKERS_URL>data/Venezia_LidoPellestrina/markers.xml</VIDEO_MARKERS_URL>
     <TITLE>Il Lido di Venezia e la Pellestina</TITLE>
     <SUBTITLE>Un tour 360 sulle isole di Venezia</SUBTITLE>
     <SUBTITLES_IT_URL>https://vr.alicefit.com/_assets/Alessandria/Alessandria_subtitles.xml</SUBTITLES_IT_URL>

@@ -34,30 +34,80 @@ function convertTimeCodeToSeconds(timeString, framerate) {
 /// with all the starting informations
 /// to setup everything
 ///////////////////////////////
-loadMainData();
+var main = {
+  title : "",
+  subtitle : "",
+  videoUrl : "",
+  videoMarkersUrl : "",
+  tracks : [],
+  load : function (url, callback = null) {
+    loadDoc(url, function (xml) {
+      let xmlDoc = xml.responseXML;
+      main.title = xmlDoc.getElementsByTagName("TITLE")[0].childNodes[0].nodeValue;
+      main.subtitle = xmlDoc.getElementsByTagName("SUBTITLE")[0].childNodes[0].nodeValue;
+      main.videoUrl = xmlDoc.getElementsByTagName("VIDEO_URL")[0].childNodes[0].nodeValue;
+      main.videoMarkersUrl = xmlDoc.getElementsByTagName("VIDEO_MARKERS_URL")[0].childNodes[0].nodeValue;
 
-function loadMainData() {
-  loadDoc("data/main.xml", function (xml) {
-    var i;
-    var xmlDoc = xml.responseXML;
-    var title = xmlDoc.getElementsByTagName("TITLE")[0].childNodes[0].nodeValue;
-    var subtitle = xmlDoc.getElementsByTagName("SUBTITLE")[0].childNodes[0].nodeValue;
-    var videoUrl = xmlDoc.getElementsByTagName("VIDEO_URL")[0].childNodes[0].nodeValue;
-    var videoMarkersUrl = xmlDoc.getElementsByTagName("VIDEOMARKERS_URL")[0].childNodes[0].nodeValue;
-    var track = [];
-    var x = xmlDoc.getElementsByTagName("TRACK");
-    for (i = 0; i < x.length; i++) {
-      track.push({
-        gpxUrl: x[i].getElementsByTagName("GPX_URL")[0].childNodes[0].nodeValue,
-        name: x[i].getElementsByTagName("NAME")[0].childNodes[0].nodeValue,
-      });
-    }
+      //var i;
+      // var track = [];
+      // var x = xmlDoc.getElementsByTagName("TRACK");
+      // for (i = 0; i < x.length; i++) {
+      //   track.push({
+      //     gpxUrl: x[i].getElementsByTagName("GPX_URL")[0].childNodes[0].nodeValue,
+      //     name: x[i].getElementsByTagName("NAME")[0].childNodes[0].nodeValue,
+      //   });
+      // }
 
-    playerSetTitle(title, subtitle);
-  });
+ 
 
-
+      if (callback != null) callback();
+    });
+  },
+  setup : function(){
+    playerSetTitle(main.title, main.subtitle);
+    loadMarkers(main.videoMarkersUrl);
+  }
 }
+
+
+
+
+main.load("data/Venezia_LidoPellestrina/main.xml", main.setup);
+
+
+
+
+
+
+
+
+
+
+
+
+
+// //loadMainData();
+
+// function loadMainData() {
+//   loadDoc("data/main.xml", function (xml) {
+//     var i;
+//     var xmlDoc = xml.responseXML;
+//     var title = xmlDoc.getElementsByTagName("TITLE")[0].childNodes[0].nodeValue;
+//     var subtitle = xmlDoc.getElementsByTagName("SUBTITLE")[0].childNodes[0].nodeValue;
+//     var videoUrl = xmlDoc.getElementsByTagName("VIDEO_URL")[0].childNodes[0].nodeValue;
+//     var videoMarkersUrl = xmlDoc.getElementsByTagName("VIDEOMARKERS_URL")[0].childNodes[0].nodeValue;
+//     var track = [];
+//     var x = xmlDoc.getElementsByTagName("TRACK");
+//     for (i = 0; i < x.length; i++) {
+//       track.push({
+//         gpxUrl: x[i].getElementsByTagName("GPX_URL")[0].childNodes[0].nodeValue,
+//         name: x[i].getElementsByTagName("NAME")[0].childNodes[0].nodeValue,
+//       });
+//     }
+
+//     playerSetTitle(title, subtitle);
+//   });
+// }
 
 
 
@@ -119,28 +169,28 @@ function createPolylineOnTerrain(pos) {
 ////////////////////////////
 
 var playerMarkers = [];
-loadMarkers();
+//loadMarkers();
 
-function loadMarkers() {
-  loadDoc("data/markers.xml", function (xml) {
+function loadMarkers(url) {
+  loadDoc(url, function (xml) {
     var i;
     var xmlDoc = xml.responseXML;
     var x = xmlDoc.getElementsByTagName("MARKER");
     for (i = 0; i < x.length; i++) {
-      var time = 0;
-      var timecode = 0;
+      var sequenceTimeCode = 0;
+      var videoTimeCode = 0;
       var title = "";
       var longitude = 0;
       var latitude = 0;
-      if (x[i].getElementsByTagName("TIME").length != 0) {
-        if (x[i].getElementsByTagName("TIME")[0].childNodes.length != 0) {
-          time = x[i].getElementsByTagName("TIME")[0].childNodes[0].nodeValue;
+      if (x[i].getElementsByTagName("SEQUENCE_TIMECODE").length != 0) {
+        if (x[i].getElementsByTagName("SEQUENCE_TIMECODE")[0].childNodes.length != 0) {
+          sequenceTimeCode = x[i].getElementsByTagName("SEQUENCE_TIMECODE")[0].childNodes[0].nodeValue;
         }
       }
-      if (x[i].getElementsByTagName("TIMECODE").length != 0) {
-        if (x[i].getElementsByTagName("TIMECODE")[0].childNodes.length != 0) {
-          timecode = x[i].getElementsByTagName("TIMECODE")[0].childNodes[0].nodeValue;
-          timecode = convertTimeCodeToSeconds(timecode, 25);
+      if (x[i].getElementsByTagName("VIDEO_TIMECODE").length != 0) {
+        if (x[i].getElementsByTagName("VIDEO_TIMECODE")[0].childNodes.length != 0) {
+          videoTimeCode = x[i].getElementsByTagName("VIDEO_TIMECODE")[0].childNodes[0].nodeValue;
+          videoTimeCode = convertTimeCodeToSeconds(videoTimeCode, 25);
         }
       }
       if (x[i].getElementsByTagName("TITLE").length != 0) {
@@ -160,8 +210,8 @@ function loadMarkers() {
       }
 
       playerMarkers.push({
-        time: time,
-        timeCode: timecode,
+        sequenceTime: sequenceTimeCode,
+        videoTime: videoTimeCode,
         title: title,
         longitude: longitude,
         latitude: latitude,
@@ -200,7 +250,6 @@ Player.listenTo(Player, Clappr.Events.PLAYER_SEEK, resetCounter);
 
 function resetCounter() {
   playerMarkerIndexStart = 0;
-  console.log("RESET");
 }
 
 function checkForMarker() {
@@ -208,13 +257,13 @@ function checkForMarker() {
 
   for (i = 0; i < playerMarkers.length; i++) {
 
-    if (i < playerMarkers.length - 1 && playerTime >= playerMarkers[i].timeCode &&
-      playerTime < playerMarkers[i + 1].timeCode && playerMarkerIndexStart != i) {
+    if (i < playerMarkers.length - 1 && playerTime >= playerMarkers[i].videoTime &&
+      playerTime < playerMarkers[i + 1].videoTime && playerMarkerIndexStart != i) {
 
       playerMarkerIndexStart = i;
       onMarkerReached(i);
 
-    } else if (i == playerMarkers.length - 1 && playerTime >= playerMarkers[i].timeCode &&
+    } else if (i == playerMarkers.length - 1 && playerTime >= playerMarkers[i].videoTime &&
       playerMarkerIndexStart != i) {
 
       playerMarkerIndexStart = i;
@@ -228,7 +277,7 @@ function checkForMarker() {
 
 function BillboardImage(element) {
   var timer;
-  var fadeTime = 25;
+  var fadeTime = 10;
   var op;
   var isFading = false;
 
@@ -338,10 +387,10 @@ var pinTest = viewer.entities.add({
   position: pos1,
   billboard: {
     //image: 'images/pin_icon.png',
-    image: 'images/pin_icon.svg',
-    width: 49,
-    height: 64,
-    verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+    image: 'images/temp.svg',
+    width: 15,
+    height: 15,
+    //verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
     heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
   }
 });
