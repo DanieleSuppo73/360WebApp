@@ -127,15 +127,48 @@ function loadMarkers() {
     var xmlDoc = xml.responseXML;
     var x = xmlDoc.getElementsByTagName("MARKER");
     for (i = 0; i < x.length; i++) {
-      timecode = x[i].getElementsByTagName("TIMECODE")[0].childNodes[0].nodeValue;
+      var time = 0;
+      var timecode = 0;
+      var title = "";
+      var longitude = 0;
+      var latitude = 0;
+      if (x[i].getElementsByTagName("TIME").length != 0) {
+        if (x[i].getElementsByTagName("TIME")[0].childNodes.length != 0) {
+          time = x[i].getElementsByTagName("TIME")[0].childNodes[0].nodeValue;
+        }
+      }
+      if (x[i].getElementsByTagName("TIMECODE").length != 0) {
+        if (x[i].getElementsByTagName("TIMECODE")[0].childNodes.length != 0) {
+          timecode = x[i].getElementsByTagName("TIMECODE")[0].childNodes[0].nodeValue;
+          timecode = convertTimeCodeToSeconds(timecode, 25);
+        }
+      }
+      if (x[i].getElementsByTagName("TITLE").length != 0) {
+        if (x[i].getElementsByTagName("TITLE")[0].childNodes.length != 0) {
+          title = x[i].getElementsByTagName("TITLE")[0].childNodes[0].nodeValue;
+        }
+      }
+      if (x[i].getElementsByTagName("LONGITUDE").length != 0) {
+        if (x[i].getElementsByTagName("LONGITUDE")[0].childNodes.length != 0) {
+          longitude = x[i].getElementsByTagName("LONGITUDE")[0].childNodes[0].nodeValue;
+        }
+      }
+      if (x[i].getElementsByTagName("LATITUDE").length != 0) {
+        if (x[i].getElementsByTagName("LATITUDE")[0].childNodes.length != 0) {
+          latitude = x[i].getElementsByTagName("LATITUDE")[0].childNodes[0].nodeValue;
+        }
+      }
 
       playerMarkers.push({
-        time: convertTimeCodeToSeconds(timecode, 25),
-        title: x[i].getElementsByTagName("TITLE")[0].childNodes[0].nodeValue,
-        longitude: x[i].getElementsByTagName("LONGITUDE")[0].childNodes[0].nodeValue,
-        latitude: x[i].getElementsByTagName("LATITUDE")[0].childNodes[0].nodeValue,
+        time: time,
+        timeCode: timecode,
+        title: title,
+        longitude: longitude,
+        latitude: latitude,
       });
     }
+
+    /// start to check for markers during video playback
     setInterval(checkForMarker, 500);
 
 
@@ -144,7 +177,7 @@ function loadMarkers() {
       createPlaceholder(marker.longitude, marker.latitude);
     });
 
-    
+
     /// add billboardImage method for each placeholder
     placeholders.forEach(function (placeholder) {
       placeholder.billboardImage = new BillboardImage(placeholder);
@@ -175,13 +208,13 @@ function checkForMarker() {
 
   for (i = 0; i < playerMarkers.length; i++) {
 
-    if (i < playerMarkers.length - 1 && playerTime >= playerMarkers[i].time &&
-      playerTime < playerMarkers[i + 1].time && playerMarkerIndexStart != i) {
+    if (i < playerMarkers.length - 1 && playerTime >= playerMarkers[i].timeCode &&
+      playerTime < playerMarkers[i + 1].timeCode && playerMarkerIndexStart != i) {
 
       playerMarkerIndexStart = i;
       onMarkerReached(i);
 
-    } else if (i == playerMarkers.length - 1 && playerTime >= playerMarkers[i].time &&
+    } else if (i == playerMarkers.length - 1 && playerTime >= playerMarkers[i].timeCode &&
       playerMarkerIndexStart != i) {
 
       playerMarkerIndexStart = i;
@@ -195,11 +228,11 @@ function checkForMarker() {
 
 function BillboardImage(element) {
   var timer;
-  var fadeTime = 50;
+  var fadeTime = 25;
   var op;
   var isFading = false;
 
-  this.setOpacity = function(value){
+  this.setOpacity = function (value) {
     op = value;
     element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, op);
   }
@@ -207,17 +240,17 @@ function BillboardImage(element) {
   this.fadeIn = function () {
     console.log("FADE IN " + this);
     isFading = true;
-    if (timer != null){
+    if (timer != null) {
       clearInterval(timer);
     }
     timer = setInterval(function () {
-      if (op >= 0.95){
+      if (op >= 0.95) {
         isFading = false;
         clearInterval(timer);
         timer = null;
         element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, 1);
       }
-      if (isFading){
+      if (isFading) {
         element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, op);
         op += 0.025;
       }
@@ -226,17 +259,17 @@ function BillboardImage(element) {
 
   this.fadeOut = function () {
     isFading = true;
-    if (timer != null){
+    if (timer != null) {
       clearInterval(timer);
     }
     timer = setInterval(function () {
-      if (op <= 0.05){
+      if (op <= 0.05) {
         isFading = false;
         clearInterval(timer);
         timer = null;
         element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, 0.001);
       }
-      if (isFading){
+      if (isFading) {
         element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, op);
         op -= 0.025;
       }
@@ -282,4 +315,56 @@ function DisplayPlayerMessage(value) {
   id.style.opacity = 1;
   id.innerHTML = value;
 
+}
+
+
+
+
+
+/////////////////////////////////////// TEST ///////////////////////////////////
+var lng1 = 12.309487;
+var lat1 = 45.343125;
+
+var lng2 = 12.365823;
+var lat2 = 45.408781;
+
+
+var pos1 = Cesium.Cartesian3.fromDegrees(lng1, lat1);
+var pos2 = Cesium.Cartesian3.fromDegrees(lng2, lat2);
+
+
+
+var pinTest = viewer.entities.add({
+  position: pos1,
+  billboard: {
+    //image: 'images/pin_icon.png',
+    image: 'images/pin_icon.svg',
+    width: 49,
+    height: 64,
+    verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+    heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
+  }
+});
+
+
+
+//setInterval (dolerp, 1000);
+
+var iii = 0;
+
+function dolerp() {
+  // console.log("LERP: " + lerp (pos1.x, pos2.x, iii));
+  // console.log("LERP: " + lerp (pos1.y, pos2.y, iii));
+
+  iii += 0.05;
+
+  var pos3 = new Cesium.Cartesian3(lerp(pos1.x, pos2.x, iii), lerp(pos1.y, pos2.y, iii), lerp(pos1.z, pos2.z, iii));
+  console.log("LERP: " + pos3);
+
+
+  pinTest.position = pos3;
+}
+
+function lerp(start, end, amt) {
+  return (1 - amt) * start + amt * end
 }

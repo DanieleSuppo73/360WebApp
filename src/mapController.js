@@ -18,6 +18,7 @@ var viewer = new Cesium.Viewer('map', {
 
 });
 
+
 var scene = viewer.scene;
 var mapCamera = scene.camera;
 
@@ -25,7 +26,7 @@ var mapController = {
     flyToElement : function(element){
         heading = viewer.scene.camera.heading;
         pitch = viewer.scene.camera.pitch;
-        range = 500;
+        range = cameraProperties.range;
         viewer.flyTo(element, {
             offset: new Cesium.HeadingPitchRange(heading, pitch, range)
         });
