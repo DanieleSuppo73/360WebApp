@@ -63,6 +63,8 @@ function TESTONE() {
   // for (ii = 0; ii < main.gpxList[0].coordinates.length; ii++) {
   //   console.log(main.gpxList[0].coordinates[ii]);
   // }
+
+  insertHeightInCoordinates(main.gpxList[2].coordinates, drawPolyline);
 }
 
 
@@ -87,6 +89,11 @@ var main = {
       main.subtitle = xmlDoc.getElementsByTagName("SUBTITLE")[0].childNodes[0].nodeValue;
       main.videoUrl = xmlDoc.getElementsByTagName("VIDEO_URL")[0].childNodes[0].nodeValue;
 
+      /// set the title in the poster image  
+      document.getElementById("title").innerHTML = main.title;
+      document.getElementById("subtitle").innerHTML = main.subtitle;
+
+
       /// load all gpx
       if (xmlDoc.getElementsByTagName("GPX").length != 0) {
         var i;
@@ -99,13 +106,7 @@ var main = {
         }
       }
 
-
-
-      /// set the title in the poster image  
-      document.getElementById("title").innerHTML = main.title;
-      document.getElementById("subtitle").innerHTML = main.subtitle;
-
-
+      
       /// load the markers
       if (xmlDoc.getElementsByTagName("VIDEO_MARKERS_URL").length != 0) {
         main.videoMarkersUrl = xmlDoc.getElementsByTagName("VIDEO_MARKERS_URL")[0].childNodes[0].nodeValue;
@@ -189,20 +190,6 @@ var main = {
 
 
       if (callback != null) callback();
-
-
-      // for (i = 0; i < main.gpxList.length; i++) {
-      //   console.log(main.gpxList[i].name);
-
-      //   // for (ii=0; ii<main.gpxList[i].coordinates.length; ii++){
-      //   //   console.log(main.gpxList[i].coordinates[ii]);
-
-      //   // }
-
-      // }
-
-
-
     });
   },
 }
@@ -235,28 +222,35 @@ main.load("data/Alessandria/main.xml");
 
 
 /// Load GPX and draw polyline
-// var coordinates = [];
+var c = [];
 
-// function loadGPX() {
-//   console.log("AAAAAAAAAAAAAAAAAAAA");
-//   loadDoc("data/Alessandria_20190620124553.gpx", function (xhttp) {
-//     gpx = new gpxParser();
-//     gpx.parse(xhttp.responseText);
+function loadGPXold() {
+  console.log("AAAAAAAAAAAAAAAAAAAA");
+  loadDoc("data/Alessandria/Alessandria_20190620124553.gpx", function (xhttp) {
+    gpx = new gpxParser();
+    gpx.parse(xhttp.responseText);
 
-//     gpx.waypoints.forEach(function (wpt) {
-//       //coordinates.push(wpt.lon, wpt.lat, wpt.ele); // push with elevation
-//       coordinates.push(wpt.lon, wpt.lat); // push without elevation
-//       console.log(wp.lon);
-//     });
+    gpx.waypoints.forEach(function (wpt) {
+      //coordinates.push(wpt.lon, wpt.lat, wpt.ele); // push with elevation
+      c.push(wpt.lon, wpt.lat); // push without elevation
+      console.log(wpt.lon);
+    });
 
-//     /// draw polyline
-//     //drawPolylineOnTerrain(coordinates);
+    /// draw polyline
+    //drawPolylineOnTerrain(coordinates);
 
 
-//     getCartographicPosition(coordinates, createPolylineOnTerrain);
+    getCartographicPosition(c, createPolylineOnTerrain);
 
-//   });
-// }
+  });
+}
+
+
+
+
+
+
+
 
 
 
@@ -264,6 +258,9 @@ main.load("data/Alessandria/main.xml");
 /// Create a 3d polyline from array with lng, lat and real terrain height
 ////////////////////////////
 function createPolylineOnTerrain(pos) {
+
+  coordinates = main.gpxList[0].coordinates;
+
   /// add the height from cartesian to the array of log lat coordinates
   i = 0;
   ii = 0;

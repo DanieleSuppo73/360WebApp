@@ -23,7 +23,7 @@ var scene = viewer.scene;
 var mapCamera = scene.camera;
 
 var mapController = {
-    flyToElement : function(element){
+    flyToElement: function (element) {
         heading = viewer.scene.camera.heading;
         pitch = viewer.scene.camera.pitch;
         range = cameraProperties.range;
@@ -49,20 +49,21 @@ layer.brightness = 2;
 
 /// Set start map position and orientation
 
+/// per alessandria
+var defaultHeight = 600;
+flyMapTo(8.921944969520226, 44.80576049196282, defaultHeight, Cesium.Math.toRadians(200.0),
+    Cesium.Math.toRadians(-50.0), 0);
 
-// var defaultHeight = 600;
-// flyMapTo(8.921944969520226, 44.80576049196282, defaultHeight, Cesium.Math.toRadians(200.0),
-//     Cesium.Math.toRadians(-50.0), 0);
 
-
-viewer.camera.setView({
-    destination : new Cesium.Cartesian3(4404792.475707513, 962828.6766361801, 4508398.182356733),
-    orientation: {
-        heading : Cesium.Math.toRadians(353.5990272815255), // east, default value is 0.0 (north)
-        pitch : Cesium.Math.toRadians(-39.021508523873536),    // default value (looking down)
-        roll : Cesium.Math.toRadians(6.28270206832835)                            
-    }
-});
+// /// per lido e pellestrina
+// viewer.camera.setView({
+//     destination : new Cesium.Cartesian3(4404792.475707513, 962828.6766361801, 4508398.182356733),
+//     orientation: {
+//         heading : Cesium.Math.toRadians(353.5990272815255), // east, default value is 0.0 (north)
+//         pitch : Cesium.Math.toRadians(-39.021508523873536),    // default value (looking down)
+//         roll : Cesium.Math.toRadians(6.28270206832835)                            
+//     }
+// });
 
 
 
@@ -85,54 +86,8 @@ function flyMapTo(longitude, latitude, height = mapCamera.positionCartographic.h
 
 
 
-// //////////////////////////////
-// /// Create placeholder on the map
-// //////////////////////////////
-// var placeholders = [];
-// function createPlaceholder(longitude, latitude, callback = null) {
-
-//     placeholders.push(viewer.entities.add({
-//         position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
-//         billboard: {
-//             //image: 'images/pin_icon.png',
-//             image: 'images/pin_icon.svg',
-//             width: 49,
-//             height: 64,
-//             verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-//             heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
-//         }
-//     }));
-
-//     if (callback != null) {
-//         callback();
-//     }
-// }
-
-
-
-
-
-
-// //////////////////////////////
-// /// Fly map to element
-// //////////////////////////////
-// function flyMapToElement(element) {
-//     heading = mapCamera.heading;
-//     pitch = mapCamera.pitch;
-//     range = 500;
-//     viewer.flyTo(element, {
-//         offset: new Cesium.HeadingPitchRange(heading, pitch, range)
-//     });
-// }
-
-
-
-
-
-
-
-/// draw a polyline from an array of coordinates
-function drawPolyline(coordinates, useHeight = false, clamp = false) {
+/// draw a polyline from an array of coordinates in degrees
+function drawPolyline(coordinates, useHeight = true, clamp = false) {
 
     if (clamp && !Cesium.Entity.supportsPolylinesOnTerrain(viewer.scene)) {
         console.log('Polylines on terrain are not supported on this platform');
@@ -163,6 +118,12 @@ function drawPolyline(coordinates, useHeight = false, clamp = false) {
 
 
 
+
+
+
+
+
+
 function getCameraInfo() {
     console.log("position: " + mapCamera.positionWC);
     console.log("heading: " + Cesium.Math.toDegrees(mapCamera.heading));
@@ -178,6 +139,7 @@ function getCartographicPosition(coordinates, callback) {
     var positions = [];
     for (i = 0; i < coordinates.length; i += 2) {
         positions.push(Cesium.Cartographic.fromDegrees(coordinates[i], coordinates[i + 1]));
+        //console.log(Cesium.Cartographic.fromDegrees(coordinates[i], coordinates[i + 1]));
     }
 
     var promise = Cesium.sampleTerrainMostDetailed(terrainProvider, positions);
@@ -185,5 +147,70 @@ function getCartographicPosition(coordinates, callback) {
         // positions[0].height and positions[1].height have been updated.
         // updatedPositions is just a reference to positions.
         callback(positions);
+    });
+}
+
+
+
+
+
+
+
+
+
+////////////////////////////
+/// return the coordinates with the elevation sampled from the terrain
+////////////////////////////
+function insertHeightInCoordinates(coordinates, callback) {
+    
+    
+
+    var positions = [];
+    for (i = 0; i < coordinates.length; i += 2) {
+        positions.push(Cesium.Cartographic.fromDegrees(coordinates[i], coordinates[i + 1]));
+        //console.log(Cesium.Cartographic.fromDegrees(coordinates[i], coordinates[i + 1]));
+    }
+
+    var promise = Cesium.sampleTerrainMostDetailed(terrainProvider, positions);
+    Cesium.when(promise, function (updatedPositions) {
+        // positions[0].height and positions[1].height have been updated.
+        // updatedPositions is just a reference to positions.
+
+
+        
+        /// add the height from cartesian to the array of log lat coordinates
+        var i = 0;
+        var ii = 0;
+        while (i <= coordinates.length) {
+
+            //console.log(coordinates[i]);
+
+            i += 2;
+            if (ii == positions.length) {
+                ii = positions.length - 1;
+            }
+            coordinates.splice(i, 0, positions[ii].height);
+            i++;
+            ii++;
+            //console.log("HEIGHT: " + positions[ii].height);
+        }
+
+        /// remove last element (...?)
+        coordinates.pop();
+
+
+        // for (y=0; y<coordinates.length; i++){
+        //     console.log(coordinates[i]);
+        // }
+
+        // /// draw polyline
+        // useHeight = true;
+        // drawPolyline(coordinates, useHeight);
+
+
+
+
+        callback(coordinates);
+
     });
 }
