@@ -85,28 +85,28 @@ function flyMapTo(longitude, latitude, height = mapCamera.positionCartographic.h
 
 
 
-//////////////////////////////
-/// Create placeholder on the map
-//////////////////////////////
-var placeholders = [];
-function createPlaceholder(longitude, latitude, callback = null) {
+// //////////////////////////////
+// /// Create placeholder on the map
+// //////////////////////////////
+// var placeholders = [];
+// function createPlaceholder(longitude, latitude, callback = null) {
 
-    placeholders.push(viewer.entities.add({
-        position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
-        billboard: {
-            //image: 'images/pin_icon.png',
-            image: 'images/pin_icon.svg',
-            width: 49,
-            height: 64,
-            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-            heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
-        }
-    }));
+//     placeholders.push(viewer.entities.add({
+//         position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
+//         billboard: {
+//             //image: 'images/pin_icon.png',
+//             image: 'images/pin_icon.svg',
+//             width: 49,
+//             height: 64,
+//             verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+//             heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
+//         }
+//     }));
 
-    if (callback != null) {
-        callback();
-    }
-}
+//     if (callback != null) {
+//         callback();
+//     }
+// }
 
 
 

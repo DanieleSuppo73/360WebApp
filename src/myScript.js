@@ -35,44 +35,133 @@ function convertTimeCodeToSeconds(timeString, framerate) {
 /// to setup everything
 ///////////////////////////////
 var main = {
-  title : "",
-  subtitle : "",
-  videoUrl : "",
-  videoMarkersUrl : "",
-  tracks : [],
-  load : function (url, callback = null) {
+  title: "",
+  subtitle: "",
+  videoUrl: "",
+  videoMarkersUrl: "",
+  gpx: [],
+  markers: [],
+  placeholders: [],
+  load: function (url, callback = null) {
     loadDoc(url, function (xml) {
       let xmlDoc = xml.responseXML;
       main.title = xmlDoc.getElementsByTagName("TITLE")[0].childNodes[0].nodeValue;
       main.subtitle = xmlDoc.getElementsByTagName("SUBTITLE")[0].childNodes[0].nodeValue;
       main.videoUrl = xmlDoc.getElementsByTagName("VIDEO_URL")[0].childNodes[0].nodeValue;
-      main.videoMarkersUrl = xmlDoc.getElementsByTagName("VIDEO_MARKERS_URL")[0].childNodes[0].nodeValue;
 
-      //var i;
-      // var track = [];
-      // var x = xmlDoc.getElementsByTagName("TRACK");
-      // for (i = 0; i < x.length; i++) {
-      //   track.push({
-      //     gpxUrl: x[i].getElementsByTagName("GPX_URL")[0].childNodes[0].nodeValue,
-      //     name: x[i].getElementsByTagName("NAME")[0].childNodes[0].nodeValue,
-      //   });
-      // }
+      if (xmlDoc.getElementsByTagName("TRACK").length != 0) {
+        var i;
+        var x = xmlDoc.getElementsByTagName("TRACK");
+        for (i = 0; i < x.length; i++) {
+          main.gpx.push({
+            gpxUrl: x[i].getElementsByTagName("GPX_URL")[0].childNodes[0].nodeValue,
+            name: x[i].getElementsByTagName("NAME")[0].childNodes[0].nodeValue,
+          });
+        }
+      }
 
- 
+
+
+      /// set the title in the poster image  
+      document.getElementById("title").innerHTML = main.title;
+      document.getElementById("subtitle").innerHTML = main.subtitle;
+
+
+      /// load the markers
+      if (xmlDoc.getElementsByTagName("VIDEO_MARKERS_URL").length != 0) {
+        main.videoMarkersUrl = xmlDoc.getElementsByTagName("VIDEO_MARKERS_URL")[0].childNodes[0].nodeValue;
+
+        loadDoc(main.videoMarkersUrl, function (xml) {
+          let i;
+          let xmlDoc = xml.responseXML;
+          let x = xmlDoc.getElementsByTagName("MARKER");
+          for (i = 0; i < x.length; i++) {
+            var sequenceTimeCode = 0;
+            var videoTimeCode = 0;
+            var title = "";
+            var longitude = 0;
+            var latitude = 0;
+            if (x[i].getElementsByTagName("SEQUENCE_TIMECODE").length != 0) {
+              if (x[i].getElementsByTagName("SEQUENCE_TIMECODE")[0].childNodes.length != 0) {
+                sequenceTimeCode = x[i].getElementsByTagName("SEQUENCE_TIMECODE")[0].childNodes[0].nodeValue;
+              }
+            }
+            if (x[i].getElementsByTagName("VIDEO_TIMECODE").length != 0) {
+              if (x[i].getElementsByTagName("VIDEO_TIMECODE")[0].childNodes.length != 0) {
+                videoTimeCode = x[i].getElementsByTagName("VIDEO_TIMECODE")[0].childNodes[0].nodeValue;
+                videoTimeCode = convertTimeCodeToSeconds(videoTimeCode, 25);
+              }
+            }
+            if (x[i].getElementsByTagName("TITLE").length != 0) {
+              if (x[i].getElementsByTagName("TITLE")[0].childNodes.length != 0) {
+                title = x[i].getElementsByTagName("TITLE")[0].childNodes[0].nodeValue;
+              }
+            }
+            if (x[i].getElementsByTagName("LONGITUDE").length != 0) {
+              if (x[i].getElementsByTagName("LONGITUDE")[0].childNodes.length != 0) {
+                longitude = x[i].getElementsByTagName("LONGITUDE")[0].childNodes[0].nodeValue;
+              }
+            }
+            if (x[i].getElementsByTagName("LATITUDE").length != 0) {
+              if (x[i].getElementsByTagName("LATITUDE")[0].childNodes.length != 0) {
+                latitude = x[i].getElementsByTagName("LATITUDE")[0].childNodes[0].nodeValue;
+              }
+            }
+
+
+            /// create the marker
+            main.markers.push({
+              sequenceTime: sequenceTimeCode,
+              videoTime: videoTimeCode,
+              title: title,
+              longitude: longitude,
+              latitude: latitude,
+            });
+
+
+            /// create the placeholder for the marker
+            if (longitude != 0 && latitude != 0){
+              var placeholder = viewer.entities.add({
+                position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
+                billboard: {
+                  image: 'images/pin_icon.svg',
+                  width: 49,
+                  height: 64,
+                  verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                  heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
+                }
+              });
+  
+              /// add billboardImage property method for the placeholder
+              placeholder.billboardImage = new BillboardImage(placeholder);
+              placeholder.billboardImage.setOpacity(0.001);
+  
+              main.placeholders.push(placeholder);
+            }
+            
+          }
+        });
+
+
+        /// start to check for markers during video playback
+        setInterval(checkForMarker, 500);
+      }
+
+
+
+
+
+
 
       if (callback != null) callback();
     });
   },
-  setup : function(){
-    playerSetTitle(main.title, main.subtitle);
-    loadMarkers(main.videoMarkersUrl);
-  }
 }
 
 
 
 
-main.load("data/Venezia_LidoPellestrina/main.xml", main.setup);
+main.load("data/Venezia_LidoPellestrina/main.xml");
 
 
 
@@ -81,33 +170,6 @@ main.load("data/Venezia_LidoPellestrina/main.xml", main.setup);
 
 
 
-
-
-
-
-
-// //loadMainData();
-
-// function loadMainData() {
-//   loadDoc("data/main.xml", function (xml) {
-//     var i;
-//     var xmlDoc = xml.responseXML;
-//     var title = xmlDoc.getElementsByTagName("TITLE")[0].childNodes[0].nodeValue;
-//     var subtitle = xmlDoc.getElementsByTagName("SUBTITLE")[0].childNodes[0].nodeValue;
-//     var videoUrl = xmlDoc.getElementsByTagName("VIDEO_URL")[0].childNodes[0].nodeValue;
-//     var videoMarkersUrl = xmlDoc.getElementsByTagName("VIDEOMARKERS_URL")[0].childNodes[0].nodeValue;
-//     var track = [];
-//     var x = xmlDoc.getElementsByTagName("TRACK");
-//     for (i = 0; i < x.length; i++) {
-//       track.push({
-//         gpxUrl: x[i].getElementsByTagName("GPX_URL")[0].childNodes[0].nodeValue,
-//         name: x[i].getElementsByTagName("NAME")[0].childNodes[0].nodeValue,
-//       });
-//     }
-
-//     playerSetTitle(title, subtitle);
-//   });
-// }
 
 
 
@@ -164,109 +226,35 @@ function createPolylineOnTerrain(pos) {
 
 
 
-////////////////////////////
-/// Load markers
-////////////////////////////
-
-var playerMarkers = [];
-//loadMarkers();
-
-function loadMarkers(url) {
-  loadDoc(url, function (xml) {
-    var i;
-    var xmlDoc = xml.responseXML;
-    var x = xmlDoc.getElementsByTagName("MARKER");
-    for (i = 0; i < x.length; i++) {
-      var sequenceTimeCode = 0;
-      var videoTimeCode = 0;
-      var title = "";
-      var longitude = 0;
-      var latitude = 0;
-      if (x[i].getElementsByTagName("SEQUENCE_TIMECODE").length != 0) {
-        if (x[i].getElementsByTagName("SEQUENCE_TIMECODE")[0].childNodes.length != 0) {
-          sequenceTimeCode = x[i].getElementsByTagName("SEQUENCE_TIMECODE")[0].childNodes[0].nodeValue;
-        }
-      }
-      if (x[i].getElementsByTagName("VIDEO_TIMECODE").length != 0) {
-        if (x[i].getElementsByTagName("VIDEO_TIMECODE")[0].childNodes.length != 0) {
-          videoTimeCode = x[i].getElementsByTagName("VIDEO_TIMECODE")[0].childNodes[0].nodeValue;
-          videoTimeCode = convertTimeCodeToSeconds(videoTimeCode, 25);
-        }
-      }
-      if (x[i].getElementsByTagName("TITLE").length != 0) {
-        if (x[i].getElementsByTagName("TITLE")[0].childNodes.length != 0) {
-          title = x[i].getElementsByTagName("TITLE")[0].childNodes[0].nodeValue;
-        }
-      }
-      if (x[i].getElementsByTagName("LONGITUDE").length != 0) {
-        if (x[i].getElementsByTagName("LONGITUDE")[0].childNodes.length != 0) {
-          longitude = x[i].getElementsByTagName("LONGITUDE")[0].childNodes[0].nodeValue;
-        }
-      }
-      if (x[i].getElementsByTagName("LATITUDE").length != 0) {
-        if (x[i].getElementsByTagName("LATITUDE")[0].childNodes.length != 0) {
-          latitude = x[i].getElementsByTagName("LATITUDE")[0].childNodes[0].nodeValue;
-        }
-      }
-
-      playerMarkers.push({
-        sequenceTime: sequenceTimeCode,
-        videoTime: videoTimeCode,
-        title: title,
-        longitude: longitude,
-        latitude: latitude,
-      });
-    }
-
-    /// start to check for markers during video playback
-    setInterval(checkForMarker, 500);
-
-
-    /// create a placeholder for each marker
-    playerMarkers.forEach(function (marker) {
-      createPlaceholder(marker.longitude, marker.latitude);
-    });
-
-
-    /// add billboardImage method for each placeholder
-    placeholders.forEach(function (placeholder) {
-      placeholder.billboardImage = new BillboardImage(placeholder);
-      placeholder.billboardImage.setOpacity(0.001);
-    });
-  });
-}
-
-
-
 
 
 
 ////////////////////////////
 /// check for marker during playback
 ////////////////////////////
-var playerMarkerIndexStart = -1;
+var markerIndex = -1;
 
 Player.listenTo(Player, Clappr.Events.PLAYER_SEEK, resetCounter);
 
 function resetCounter() {
-  playerMarkerIndexStart = 0;
+  markerIndex = 0;
 }
 
 function checkForMarker() {
-  if (playerMarkers.length == 1 || !playerPlaying) return;
+  if (main.markers.length < 2 || !playerPlaying) return;
 
-  for (i = 0; i < playerMarkers.length; i++) {
+  for (i = 0; i < main.markers.length; i++) {
 
-    if (i < playerMarkers.length - 1 && playerTime >= playerMarkers[i].videoTime &&
-      playerTime < playerMarkers[i + 1].videoTime && playerMarkerIndexStart != i) {
+    if (i < main.markers.length - 1 && playerTime >= main.markers[i].videoTime &&
+      playerTime < main.markers[i + 1].videoTime && markerIndex != i) {
 
-      playerMarkerIndexStart = i;
+      markerIndex = i;
       onMarkerReached(i);
 
-    } else if (i == playerMarkers.length - 1 && playerTime >= playerMarkers[i].videoTime &&
-      playerMarkerIndexStart != i) {
+    } else if (i == main.markers.length - 1 && playerTime >= main.markers[i].videoTime &&
+      markerIndex != i) {
 
-      playerMarkerIndexStart = i;
+      markerIndex = i;
       onMarkerReached(i);
     }
   }
@@ -338,23 +326,23 @@ function onMarkerReached(index) {
   if (index == oldMarkerIndex) return;
 
   /// debug
-  DisplayPlayerMessage("marker:" + index + " - " + playerMarkers[index].title);
-  console.log("linkato su marker : " + index + " - " + playerMarkers[index].title);
-  console.log("player:" + playerTime + " - marker:" + playerMarkers[index].time);
+  DisplayPlayerMessage("marker:" + index + " - " + main.markers[index].title);
+  console.log("linkato su marker : " + index + " - " + main.markers[index].title);
+  console.log("player:" + playerTime + " - marker:" + main.markers[index].time);
 
   /// fade in-out old placeholders
   if (oldMarkerIndex != null) {
-    placeholders[oldMarkerIndex].billboardImage.fadeOut();
+    main.placeholders[oldMarkerIndex].billboardImage.fadeOut();
     console.log("spengo " + oldMarkerIndex);
   }
 
   /// fade-in new placeholder
-  placeholders[index].billboardImage.fadeIn();
+  main.placeholders[index].billboardImage.fadeIn();
   console.log("accendo " + index);
   oldMarkerIndex = index;
 
 
-  mapController.flyToElement(placeholders[index]);
+  mapController.flyToElement(main.placeholders[index]);
 }
 
 
