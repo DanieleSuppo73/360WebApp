@@ -11,6 +11,19 @@ function loadDoc(url, callback) {
 
 
 
+function loadGPX(obj, callback) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function () {
+    if (this.readyState == 4 && this.status == 200) {
+      callback(obj, this);
+    }
+  };
+  xhttp.open("GET", obj.url, true);
+  xhttp.send();
+}
+
+
+
 function convertTimeCodeToSeconds(timeString, framerate) {
   var timeArray = timeString.split(":");
   var hours = parseInt(timeArray[0]) * 60 * 60;
@@ -24,56 +37,32 @@ function convertTimeCodeToSeconds(timeString, framerate) {
 
 
 
-
-
-// function gpxLoader(gpxObj) {
-//   this.fileUrl = gpxObj.url;
-
-//   loadDoc(gpxObj.url, function (xhttp) {
-//     var _gpx = new gpxParser();
-//     _gpx.parse(xhttp.responseText);
-//     _gpx.waypoints.forEach(function (wpt) {
-//       gpxObj.coordinates.push(wpt.lon, wpt.lat); // push without elevation
-//       console.log(wpt.lon);
-//     });
-//   });
-
-// }
-
-
-
-
-
-
 function GPX() {
   this.url = "";
   this.name = "";
   this.coordinates = [];
-  this.load = function () {
-    obj = this;
-    loadDoc(this.url, function (xhttp) {
-      console.log("NOME " + obj.name);
+  this.load = function (callback = null) {
+    loadGPX(this, function (obj, xhttp) {
       var _gpx = new gpxParser();
       _gpx.parse(xhttp.responseText);
       _gpx.waypoints.forEach(function (wpt) {
         obj.coordinates.push(wpt.lon, wpt.lat); // push without elevation
       });
-      
-      console.log("CI SONO N. " + obj.coordinates.length + " COORDINATE");
-    });
 
-    
+      if (callback) callback();
+      console.log(obj.name + " - " + obj.coordinates.length + " COORDINATE");
+    });
   }
 }
 
 
 function TESTONE() {
-  console.log(main.gpxList[0].name);
-  console.log(main.gpxList[0].url);
-  
-  for (ii = 0; ii < main.gpxList[0].coordinates.length; ii++) {
-    console.log(main.gpxList[0].coordinates[ii]);
-  }
+  console.log(main.gpxList[1].name);
+  console.log(main.gpxList[1].url);
+  console.log("CI SONO N. " + main.gpxList[1].coordinates.length + " COORDINATE");
+  // for (ii = 0; ii < main.gpxList[0].coordinates.length; ii++) {
+  //   console.log(main.gpxList[0].coordinates[ii]);
+  // }
 }
 
 
@@ -93,61 +82,20 @@ var main = {
   load: function (url, callback = null) {
     loadDoc(url, function (xml) {
       let xmlDoc = xml.responseXML;
+
       main.title = xmlDoc.getElementsByTagName("TITLE")[0].childNodes[0].nodeValue;
       main.subtitle = xmlDoc.getElementsByTagName("SUBTITLE")[0].childNodes[0].nodeValue;
       main.videoUrl = xmlDoc.getElementsByTagName("VIDEO_URL")[0].childNodes[0].nodeValue;
 
+      /// load all gpx
       if (xmlDoc.getElementsByTagName("GPX").length != 0) {
         var i;
         var x = xmlDoc.getElementsByTagName("GPX");
         for (i = 0; i < x.length; i++) {
-
           main.gpxList[i] = new GPX;
           main.gpxList[i].url = x[i].getElementsByTagName("GPX_URL")[0].childNodes[0].nodeValue;
           main.gpxList[i].name = x[i].getElementsByTagName("GPX_NAME")[0].childNodes[0].nodeValue;
           main.gpxList[i].load();
-
-
-
-
-
-
-
-          // var gpx = {
-          //   url: x[i].getElementsByTagName("GPX_URL")[0].childNodes[0].nodeValue,
-          //   name: x[i].getElementsByTagName("GPX_NAME")[0].childNodes[0].nodeValue,
-          //   coordinates: [],
-          // };
-
-          // /// load gpx data
-          // var loader = new gpxLoader(gpx.url);
-          // loader.data(function (data) {
-          //   console.log("CI SONO " + data.length);
-
-          // });
-
-
-
-
-
-
-
-          //main.gpxList.push(gpx);
-
-
-
-
-
-
-
-          // main.gpx.push({
-          //   gpxUrl: x[i].getElementsByTagName("GPX_URL")[0].childNodes[0].nodeValue,
-          //   name: x[i].getElementsByTagName("GPX_NAME")[0].childNodes[0].nodeValue,
-          //   coordinates: [],
-          // });
-
-          /// load the gpx and create the polyline of the route
-
         }
       }
 
@@ -287,28 +235,28 @@ main.load("data/Alessandria/main.xml");
 
 
 /// Load GPX and draw polyline
-var coordinates = [];
+// var coordinates = [];
 
-function loadGPX() {
-  console.log("AAAAAAAAAAAAAAAAAAAA");
-  loadDoc("data/Alessandria_20190620124553.gpx", function (xhttp) {
-    gpx = new gpxParser();
-    gpx.parse(xhttp.responseText);
+// function loadGPX() {
+//   console.log("AAAAAAAAAAAAAAAAAAAA");
+//   loadDoc("data/Alessandria_20190620124553.gpx", function (xhttp) {
+//     gpx = new gpxParser();
+//     gpx.parse(xhttp.responseText);
 
-    gpx.waypoints.forEach(function (wpt) {
-      //coordinates.push(wpt.lon, wpt.lat, wpt.ele); // push with elevation
-      coordinates.push(wpt.lon, wpt.lat); // push without elevation
-      console.log(wp.lon);
-    });
+//     gpx.waypoints.forEach(function (wpt) {
+//       //coordinates.push(wpt.lon, wpt.lat, wpt.ele); // push with elevation
+//       coordinates.push(wpt.lon, wpt.lat); // push without elevation
+//       console.log(wp.lon);
+//     });
 
-    /// draw polyline
-    //drawPolylineOnTerrain(coordinates);
+//     /// draw polyline
+//     //drawPolylineOnTerrain(coordinates);
 
 
-    getCartographicPosition(coordinates, createPolylineOnTerrain);
+//     getCartographicPosition(coordinates, createPolylineOnTerrain);
 
-  });
-}
+//   });
+// }
 
 
 
