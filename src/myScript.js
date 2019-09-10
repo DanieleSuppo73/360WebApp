@@ -17,7 +17,6 @@ function convertTimeCodeToSeconds(timeString, framerate) {
   var minutes = parseInt(timeArray[1]) * 60;
   var seconds = parseInt(timeArray[2]);
   var frames = parseInt(timeArray[3]) * (1 / framerate);
-  var str = "h:" + hours + "\nm:" + minutes + "\ns:" + seconds + "\nf:" + frames;
   var totalTime = hours + minutes + seconds + frames;
   return totalTime;
 }
@@ -27,6 +26,55 @@ function convertTimeCodeToSeconds(timeString, framerate) {
 
 
 
+// function gpxLoader(gpxObj) {
+//   this.fileUrl = gpxObj.url;
+
+//   loadDoc(gpxObj.url, function (xhttp) {
+//     var _gpx = new gpxParser();
+//     _gpx.parse(xhttp.responseText);
+//     _gpx.waypoints.forEach(function (wpt) {
+//       gpxObj.coordinates.push(wpt.lon, wpt.lat); // push without elevation
+//       console.log(wpt.lon);
+//     });
+//   });
+
+// }
+
+
+
+
+
+
+function GPX() {
+  this.url = "";
+  this.name = "";
+  this.coordinates = [];
+  this.load = function () {
+    obj = this;
+    loadDoc(this.url, function (xhttp) {
+      console.log("NOME " + obj.name);
+      var _gpx = new gpxParser();
+      _gpx.parse(xhttp.responseText);
+      _gpx.waypoints.forEach(function (wpt) {
+        obj.coordinates.push(wpt.lon, wpt.lat); // push without elevation
+      });
+      
+      console.log("CI SONO N. " + obj.coordinates.length + " COORDINATE");
+    });
+
+    
+  }
+}
+
+
+function TESTONE() {
+  console.log(main.gpxList[0].name);
+  console.log(main.gpxList[0].url);
+  
+  for (ii = 0; ii < main.gpxList[0].coordinates.length; ii++) {
+    console.log(main.gpxList[0].coordinates[ii]);
+  }
+}
 
 
 ///////////////////////////////
@@ -39,7 +87,7 @@ var main = {
   subtitle: "",
   videoUrl: "",
   videoMarkersUrl: "",
-  gpx: [],
+  gpxList: [],
   markers: [],
   placeholders: [],
   load: function (url, callback = null) {
@@ -49,14 +97,57 @@ var main = {
       main.subtitle = xmlDoc.getElementsByTagName("SUBTITLE")[0].childNodes[0].nodeValue;
       main.videoUrl = xmlDoc.getElementsByTagName("VIDEO_URL")[0].childNodes[0].nodeValue;
 
-      if (xmlDoc.getElementsByTagName("TRACK").length != 0) {
+      if (xmlDoc.getElementsByTagName("GPX").length != 0) {
         var i;
-        var x = xmlDoc.getElementsByTagName("TRACK");
+        var x = xmlDoc.getElementsByTagName("GPX");
         for (i = 0; i < x.length; i++) {
-          main.gpx.push({
-            gpxUrl: x[i].getElementsByTagName("GPX_URL")[0].childNodes[0].nodeValue,
-            name: x[i].getElementsByTagName("NAME")[0].childNodes[0].nodeValue,
-          });
+
+          main.gpxList[i] = new GPX;
+          main.gpxList[i].url = x[i].getElementsByTagName("GPX_URL")[0].childNodes[0].nodeValue;
+          main.gpxList[i].name = x[i].getElementsByTagName("GPX_NAME")[0].childNodes[0].nodeValue;
+          main.gpxList[i].load();
+
+
+
+
+
+
+
+          // var gpx = {
+          //   url: x[i].getElementsByTagName("GPX_URL")[0].childNodes[0].nodeValue,
+          //   name: x[i].getElementsByTagName("GPX_NAME")[0].childNodes[0].nodeValue,
+          //   coordinates: [],
+          // };
+
+          // /// load gpx data
+          // var loader = new gpxLoader(gpx.url);
+          // loader.data(function (data) {
+          //   console.log("CI SONO " + data.length);
+
+          // });
+
+
+
+
+
+
+
+          //main.gpxList.push(gpx);
+
+
+
+
+
+
+
+          // main.gpx.push({
+          //   gpxUrl: x[i].getElementsByTagName("GPX_URL")[0].childNodes[0].nodeValue,
+          //   name: x[i].getElementsByTagName("GPX_NAME")[0].childNodes[0].nodeValue,
+          //   coordinates: [],
+          // });
+
+          /// load the gpx and create the polyline of the route
+
         }
       }
 
@@ -120,7 +211,8 @@ var main = {
 
 
             /// create the placeholder for the marker
-            if (longitude != 0 && latitude != 0){
+            /// if exist lng/lat for the marker
+            if (longitude != 0 && latitude != 0) {
               var placeholder = viewer.entities.add({
                 position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
                 billboard: {
@@ -131,14 +223,14 @@ var main = {
                   heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
                 }
               });
-  
+
               /// add billboardImage property method for the placeholder
               placeholder.billboardImage = new BillboardImage(placeholder);
               placeholder.billboardImage.setOpacity(0.001);
-  
+
               main.placeholders.push(placeholder);
             }
-            
+
           }
         });
 
@@ -148,12 +240,21 @@ var main = {
       }
 
 
-
-
-
-
-
       if (callback != null) callback();
+
+
+      // for (i = 0; i < main.gpxList.length; i++) {
+      //   console.log(main.gpxList[i].name);
+
+      //   // for (ii=0; ii<main.gpxList[i].coordinates.length; ii++){
+      //   //   console.log(main.gpxList[i].coordinates[ii]);
+
+      //   // }
+
+      // }
+
+
+
     });
   },
 }
@@ -161,7 +262,18 @@ var main = {
 
 
 
-main.load("data/Venezia_LidoPellestrina/main.xml");
+// main.load("data/Venezia_LidoPellestrina/main.xml");
+main.load("data/Alessandria/main.xml");
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -178,6 +290,7 @@ main.load("data/Venezia_LidoPellestrina/main.xml");
 var coordinates = [];
 
 function loadGPX() {
+  console.log("AAAAAAAAAAAAAAAAAAAA");
   loadDoc("data/Alessandria_20190620124553.gpx", function (xhttp) {
     gpx = new gpxParser();
     gpx.parse(xhttp.responseText);
@@ -185,6 +298,7 @@ function loadGPX() {
     gpx.waypoints.forEach(function (wpt) {
       //coordinates.push(wpt.lon, wpt.lat, wpt.ele); // push with elevation
       coordinates.push(wpt.lon, wpt.lat); // push without elevation
+      console.log(wp.lon);
     });
 
     /// draw polyline
