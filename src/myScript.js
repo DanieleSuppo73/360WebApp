@@ -41,6 +41,8 @@ function GPX() {
   this.url = "";
   this.name = "";
   this.coordinates = [];
+
+  /// load the gpx file
   this.load = function (callback = null) {
     loadGPX(this, function (obj, xhttp) {
       var _gpx = new gpxParser();
@@ -49,8 +51,11 @@ function GPX() {
         obj.coordinates.push(wpt.lon, wpt.lat); // push without elevation
       });
 
+      /// get the height for each coordinate and draw the polyline
+      insertHeightInCoordinates(obj.coordinates, drawPolyline);
+
+      /// callback
       if (callback) callback();
-      console.log(obj.name + " - " + obj.coordinates.length + " COORDINATE");
     });
   }
 }
@@ -106,7 +111,9 @@ var main = {
         }
       }
 
-      
+
+
+
       /// load the markers
       if (xmlDoc.getElementsByTagName("VIDEO_MARKERS_URL").length != 0) {
         main.videoMarkersUrl = xmlDoc.getElementsByTagName("VIDEO_MARKERS_URL")[0].childNodes[0].nodeValue;

@@ -162,29 +162,20 @@ function getCartographicPosition(coordinates, callback) {
 /// return the coordinates with the elevation sampled from the terrain
 ////////////////////////////
 function insertHeightInCoordinates(coordinates, callback) {
-    
-    
-
     var positions = [];
     for (i = 0; i < coordinates.length; i += 2) {
         positions.push(Cesium.Cartographic.fromDegrees(coordinates[i], coordinates[i + 1]));
-        //console.log(Cesium.Cartographic.fromDegrees(coordinates[i], coordinates[i + 1]));
     }
 
     var promise = Cesium.sampleTerrainMostDetailed(terrainProvider, positions);
     Cesium.when(promise, function (updatedPositions) {
         // positions[0].height and positions[1].height have been updated.
         // updatedPositions is just a reference to positions.
-
-
         
         /// add the height from cartesian to the array of log lat coordinates
         var i = 0;
         var ii = 0;
         while (i <= coordinates.length) {
-
-            //console.log(coordinates[i]);
-
             i += 2;
             if (ii == positions.length) {
                 ii = positions.length - 1;
@@ -192,25 +183,12 @@ function insertHeightInCoordinates(coordinates, callback) {
             coordinates.splice(i, 0, positions[ii].height);
             i++;
             ii++;
-            //console.log("HEIGHT: " + positions[ii].height);
         }
 
         /// remove last element (...?)
         coordinates.pop();
 
-
-        // for (y=0; y<coordinates.length; i++){
-        //     console.log(coordinates[i]);
-        // }
-
-        // /// draw polyline
-        // useHeight = true;
-        // drawPolyline(coordinates, useHeight);
-
-
-
-
+        /// callback
         callback(coordinates);
-
     });
 }
