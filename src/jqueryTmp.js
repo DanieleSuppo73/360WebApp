@@ -26,40 +26,19 @@ var cameraProperties = {
 
 
 
+//:::::::::::::::::::::::::::::::::::::::::::::::::
+//:::                                           :::
+//:::           CAMERA CONTROLLERS              :::
+//:::                                           :::
+//:::::::::::::::::::::::::::::::::::::::::::::::::
+
+
+
 $(document).ready(function () {
-  // $("button").click(function(){
-  //   $("#playerOverlay").slideToggle();
-  // });
-
-  // $("#player").hover(function(){
-  //   $("#playerOverlay").hide();
-  // },
-  // function(){
-  //   $("#playerOverlay").show();
-  // }
-  // );
-
-
-  // $("#player").hover(function(){
-  //   $("#map").animate({
-  //     width: "toggle"
-  //   });
-  // });
-
-  //var zoom = 0;
-
-
-
-
-
-  //:::::::::::::::::::::::::::::::::::::::::::::::::
-  //:::                                           :::
-  //:::           CAMERA CONTROLLERS              :::
-  //:::                                           :::
-  //:::::::::::::::::::::::::::::::::::::::::::::::::
-
-
+  
   var timer;
+
+
 
   $("#zoomIn").mousedown(function () {
     $(this).css('opacity', '1');
@@ -93,6 +72,8 @@ $(document).ready(function () {
 
 
 
+
+
   $("#zoomOut").mousedown(function () {
     $(this).css('opacity', '1');
     if (timer != null) {
@@ -109,7 +90,7 @@ $(document).ready(function () {
     }, 10);
     return false;
   })
-  
+
   $("#zoomOut").mouseup(function () {
     $(this).css('opacity', '0.7');
     clearInterval(timer);
@@ -125,6 +106,9 @@ $(document).ready(function () {
 
 
 
+
+
+
   $("#turnLeft").mousedown(function () {
     $(this).css('opacity', '1');
     if (timer != null) {
@@ -133,17 +117,13 @@ $(document).ready(function () {
       return false;
     }
 
-    /// get the size of the window
-    var elmnt = document.getElementById("map");
-
     // find intersection of ray from camera to the center of the window
-    var ellipsoid = viewer.scene.mapProjection.ellipsoid;
+    var elmnt = document.getElementById("map");
     var windowCoordinates = new Cesium.Cartesian2(elmnt.offsetHeight / 2, elmnt.offsetWidth / 2);
     var ray = viewer.camera.getPickRay(windowCoordinates);
-    var intersection = Cesium.IntersectionTests.rayEllipsoid(ray, ellipsoid);
-    var intersectionPoint = Cesium.Ray.getPoint(ray, intersection.start);
+    var intersectionPoint = viewer.scene.globe.pick(ray, viewer.scene);
 
-    
+
     timer = setInterval(function () {
       camera.rotate(intersectionPoint, 0.005);
     }, 10);
