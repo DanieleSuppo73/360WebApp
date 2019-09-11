@@ -183,9 +183,13 @@ var main = {
                 //offset: offset,
                 duration: 0
               });
+
+              $("#mapLoader").fadeOut("slow");
             }
           });
         }
+
+        
       }
 
 
@@ -304,8 +308,8 @@ var main = {
 
 
 
-
-main.load("data/Venezia_LidoPellestrina/main.xml");
+main.load("data/Venezia_LioPiccolo/main.xml");
+//main.load("data/Venezia_LidoPellestrina/main.xml");
 //main.load("data/Alessandria/main.xml");
 
 

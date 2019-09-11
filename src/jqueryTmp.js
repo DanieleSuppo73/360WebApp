@@ -47,13 +47,19 @@ $(document).ready(function () {
   // });
 
   //var zoom = 0;
-  
-  
+
+
+
+
+
+  //:::::::::::::::::::::::::::::::::::::::::::::::::
+  //:::                                           :::
+  //:::           CAMERA CONTROLLERS              :::
+  //:::                                           :::
+  //:::::::::::::::::::::::::::::::::::::::::::::::::
+
+
   var timer;
-
-
-  
-
 
   $("#zoomIn").mousedown(function () {
     $(this).css('opacity', '1');
@@ -103,6 +109,7 @@ $(document).ready(function () {
     }, 10);
     return false;
   })
+  
   $("#zoomOut").mouseup(function () {
     $(this).css('opacity', '0.7');
     clearInterval(timer);
@@ -120,12 +127,14 @@ $(document).ready(function () {
 
   $("#turnLeft").mousedown(function () {
     $(this).css('opacity', '1');
+    if (timer != null) {
+      clearInterval(timer);
+      timer = null;
+      return false;
+    }
 
     /// get the size of the window
     var elmnt = document.getElementById("map");
-    console.log(elmnt.offsetHeight);
-    console.log(elmnt.offsetWidth);
-
 
     // find intersection of ray from camera to the center of the window
     var ellipsoid = viewer.scene.mapProjection.ellipsoid;
@@ -134,72 +143,23 @@ $(document).ready(function () {
     var intersection = Cesium.IntersectionTests.rayEllipsoid(ray, ellipsoid);
     var intersectionPoint = Cesium.Ray.getPoint(ray, intersection.start);
 
-
-    /// get the range
-    var range = Cesium.Cartesian3.distance(camera.positionWC, intersectionPoint);
-
-
-    // /// rotate the camera
-    // var heading = camera.heading;
-    // var pitch = camera.pitch
-    // viewer.camera.lookAt(intersectionPoint, new Cesium.HeadingPitchRange(heading, pitch, range));
-
-
-    console.log("INTERSECTION POINT: " + intersectionPoint);
-    console.log("POSITION: " + viewer.scene.pickPosition(windowCoordinates));
-    var aaa = viewer.scene.pickPosition(windowCoordinates);
-
-
-
-
-
-
-
-
-    var pin = viewer.entities.add({
-      position: aaa,
-      billboard: {
-        //image: 'images/pin_icon.png',
-        image: 'images/pin_icon.svg',
-        width: 5,
-        height: 5,
-        //verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-        heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
-      }
-    });
-
-
-
-    //   var heading = viewer.scene.camera.heading;
-    //   var pitch = viewer.scene.camera.pitch;
-
-
-
-
-    //   viewer.flyTo(pin, {
-    //       offset: new Cesium.HeadingPitchRange(80, pitch, range),
-    //       duration: 0
-    //   });
-
-
-
-
-
-
-
-    // if (timer != null) {
-    //   clearInterval(timer);
-    //   timer = null;
-    //   return false;
-    // }
-    // timer = setInterval(function () {
-    //   let h = cameraProperties.height;
-    //   if (h <= cameraProperties.maxHeight) {
-    //     zoom = Math.pow(h, 1.25) * cameraProperties.zoomRate;
-    //     camera.moveBackward(zoom);
-    //   }
-    // }, 10);
-    // return false;
+    
+    timer = setInterval(function () {
+      camera.rotate(intersectionPoint, 0.005);
+    }, 10);
+    return false;
+  })
+  $("#turnLeft").mouseup(function () {
+    $(this).css('opacity', '0.7');
+    clearInterval(timer);
+    timer = null;
+    return false;
+  })
+  $("#turnLeft").mouseleave(function () {
+    $(this).css('opacity', '0.7');
+    clearInterval(timer);
+    timer = null;
+    return false;
   })
 
 });
