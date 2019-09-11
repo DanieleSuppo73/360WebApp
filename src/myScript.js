@@ -111,7 +111,7 @@ var main = {
       main.posterImage = xmlDoc.getElementsByTagName("POSTER_IMAGE")[0].childNodes[0].nodeValue;
 
       /// load the video
-      loadPlayer('video/Lido%20-%20Pellestrina_026.mp4', main.posterImage);
+      loadPlayer(main.videoUrl, main.posterImage);
 
       /// set the title in the poster image  
       document.getElementById("title").innerHTML = main.title;
@@ -176,13 +176,13 @@ var main = {
                 allCoordinates.push.apply(allCoordinates, main.gpxList[y].coordinates);
               }
 
-              /// create a bounding sphere and fly to it
+              /// create a bounding sphere and fly there
               var allPositions = Cesium.Cartesian3.fromDegreesArrayHeights(allCoordinates)
               var boundingSphere = new Cesium.BoundingSphere.fromPoints(allPositions);
               viewer.camera.flyToBoundingSphere(boundingSphere, {
                 //offset: offset,
                 duration: 0
-            });
+              });
             }
           });
         }
@@ -266,6 +266,29 @@ var main = {
             }
 
           }
+
+          /// when all markers are loaded, if there are no GPX
+          /// create a bounging sphere around the markers
+          /// to fly the camera in position
+          if (main.gpxList.length == 0) {
+
+            /// create an array with all coordinates from all markers
+            var allCoordinates = [];
+            for (y = 0; y < main.markers.length; y++) {
+              allCoordinates.push(main.markers[y].longitude, main.markers[y].latitude);
+            }
+
+            insertHeightInCoordinates(allCoordinates, function () {
+
+              /// create a bounding sphere and fly there
+              var allPositions = Cesium.Cartesian3.fromDegreesArrayHeights(allCoordinates)
+              var boundingSphere = new Cesium.BoundingSphere.fromPoints(allPositions);
+              viewer.camera.flyToBoundingSphere(boundingSphere, {
+                //offset: offset,
+                duration: 0
+              });
+            });
+          }
         });
 
 
@@ -282,8 +305,8 @@ var main = {
 
 
 
-//main.load("data/Venezia_LidoPellestrina/main.xml");
-main.load("data/Alessandria/main.xml");
+main.load("data/Venezia_LidoPellestrina/main.xml");
+//main.load("data/Alessandria/main.xml");
 
 
 
