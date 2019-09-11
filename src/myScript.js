@@ -83,9 +83,11 @@ var main = {
   subtitle: "",
   videoUrl: "",
   videoMarkersUrl: "",
+  posterImage: "",
   gpxList: [],
   markers: [],
   placeholders: [],
+  labels: [],
   load: function (url, callback = null) {
     loadDoc(url, function (xml) {
       let xmlDoc = xml.responseXML;
@@ -93,16 +95,55 @@ var main = {
       main.title = xmlDoc.getElementsByTagName("TITLE")[0].childNodes[0].nodeValue;
       main.subtitle = xmlDoc.getElementsByTagName("SUBTITLE")[0].childNodes[0].nodeValue;
       main.videoUrl = xmlDoc.getElementsByTagName("VIDEO_URL")[0].childNodes[0].nodeValue;
+      main.posterImage = xmlDoc.getElementsByTagName("POSTER_IMAGE")[0].childNodes[0].nodeValue;
+
+      /// load the video
+      loadPlayer('video/Lido%20-%20Pellestrina_026.mp4', main.posterImage);
 
       /// set the title in the poster image  
       document.getElementById("title").innerHTML = main.title;
       document.getElementById("subtitle").innerHTML = main.subtitle;
 
 
+      /// load map labels
+      main.labels = [];
+      if (xmlDoc.getElementsByTagName("LABELS_URL").length != 0) {
+        var labelsUrl = xmlDoc.getElementsByTagName("LABELS_URL")[0].childNodes[0].nodeValue;
+
+        loadDoc(labelsUrl, function (xml) {
+          let i;
+          let xmlDoc = xml.responseXML;
+          let x = xmlDoc.getElementsByTagName("LABEL");
+          for (i = 0; i < x.length; i++) {
+            var text = x[i].getElementsByTagName("TEXT")[0].childNodes[0].nodeValue;
+            var size = x[i].getElementsByTagName("SIZE")[0].childNodes[0].nodeValue;
+            var longitude = x[i].getElementsByTagName("LONGITUDE")[0].childNodes[0].nodeValue;
+            var latitude = x[i].getElementsByTagName("LATITUDE")[0].childNodes[0].nodeValue;
+
+            /// create map label
+            main.labels.push(viewer.entities.add({
+              position : Cesium.Cartesian3.fromDegrees(longitude, latitude),
+              label : {
+                  text : text,
+                  font : size.toString() + 'px sans-serif',
+                  fillColor : Cesium.Color.WHITE,
+                  outlineColor : Cesium.Color.BLACK,
+                  outlineWidth : 2,
+                  style : Cesium.LabelStyle.FILL_AND_OUTLINE
+              }
+          }));
+
+          }
+        });
+      }
+
+
       /// load all gpx
+      main.gpxList = [];
       if (xmlDoc.getElementsByTagName("GPX").length != 0) {
         var i;
         var x = xmlDoc.getElementsByTagName("GPX");
+        
         for (i = 0; i < x.length; i++) {
           main.gpxList[i] = new GPX;
           main.gpxList[i].url = x[i].getElementsByTagName("GPX_URL")[0].childNodes[0].nodeValue;
@@ -115,6 +156,7 @@ var main = {
 
 
       /// load the markers
+      main.markers = [];
       if (xmlDoc.getElementsByTagName("VIDEO_MARKERS_URL").length != 0) {
         main.videoMarkersUrl = xmlDoc.getElementsByTagName("VIDEO_MARKERS_URL")[0].childNodes[0].nodeValue;
 
@@ -204,8 +246,8 @@ var main = {
 
 
 
-// main.load("data/Venezia_LidoPellestrina/main.xml");
-main.load("data/Alessandria/main.xml");
+main.load("data/Venezia_LidoPellestrina/main.xml");
+//main.load("data/Alessandria/main.xml");
 
 
 
@@ -300,7 +342,7 @@ function createPolylineOnTerrain(pos) {
 ////////////////////////////
 var markerIndex = -1;
 
-Player.listenTo(Player, Clappr.Events.PLAYER_SEEK, resetCounter);
+// Player.listenTo(Player, Clappr.Events.PLAYER_SEEK, resetCounter);
 
 function resetCounter() {
   markerIndex = 0;

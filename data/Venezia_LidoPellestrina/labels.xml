@@ -1,0 +1,20 @@
+<LABELS>
+    <LABEL>
+        <TEXT>Venezia</TEXT>
+        <LONGITUDE>12.3153133</LONGITUDE>
+        <LATITUDE>45.4392717</LATITUDE>
+        <SIZE>22</SIZE>
+    </LABEL>
+    <LABEL>
+        <TEXT>Lido</TEXT>
+        <LONGITUDE>12.353822</LONGITUDE>
+        <LATITUDE>45.390047</LATITUDE>
+        <SIZE>16</SIZE>
+    </LABEL>
+    <LABEL>
+        <TEXT>Chioggia</TEXT>
+        <LONGITUDE>12.280343</LONGITUDE>
+        <LATITUDE>45.214687</LATITUDE>
+        <SIZE>16</SIZE>
+    </LABEL>
+</LABELS>

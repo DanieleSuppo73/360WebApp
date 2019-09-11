@@ -22,6 +22,10 @@ var viewer = new Cesium.Viewer('map', {
 var scene = viewer.scene;
 var mapCamera = scene.camera;
 
+
+
+viewer.scene.globe.maximumScreenSpaceError = 1.2; /// default is 2
+
 var mapController = {
     flyToElement: function (element) {
         heading = viewer.scene.camera.heading;
@@ -40,7 +44,7 @@ var mapController = {
 /// Map color correction
 var imageryLayers = viewer.imageryLayers;
 var layer = imageryLayers.get(0);
-layer.brightness = 2;
+//layer.brightness = 2;
 //layer.gamma = 1.05;
 
 
@@ -49,21 +53,21 @@ layer.brightness = 2;
 
 /// Set start map position and orientation
 
-/// per alessandria
-var defaultHeight = 600;
-flyMapTo(8.921944969520226, 44.80576049196282, defaultHeight, Cesium.Math.toRadians(200.0),
-    Cesium.Math.toRadians(-50.0), 0);
+// /// per alessandria
+// var defaultHeight = 600;
+// flyMapTo(8.921944969520226, 44.80576049196282, defaultHeight, Cesium.Math.toRadians(200.0),
+//     Cesium.Math.toRadians(-50.0), 0);
 
 
-// /// per lido e pellestrina
-// viewer.camera.setView({
-//     destination : new Cesium.Cartesian3(4404792.475707513, 962828.6766361801, 4508398.182356733),
-//     orientation: {
-//         heading : Cesium.Math.toRadians(353.5990272815255), // east, default value is 0.0 (north)
-//         pitch : Cesium.Math.toRadians(-39.021508523873536),    // default value (looking down)
-//         roll : Cesium.Math.toRadians(6.28270206832835)                            
-//     }
-// });
+/// per lido e pellestrina
+viewer.camera.setView({
+    destination : new Cesium.Cartesian3(4404792.475707513, 962828.6766361801, 4508398.182356733),
+    orientation: {
+        heading : Cesium.Math.toRadians(353.5990272815255), // east, default value is 0.0 (north)
+        pitch : Cesium.Math.toRadians(-39.021508523873536),    // default value (looking down)
+        roll : Cesium.Math.toRadians(6.28270206832835)                            
+    }
+});
 
 
 
@@ -190,5 +194,24 @@ function insertHeightInCoordinates(coordinates, callback) {
 
         /// callback
         callback(coordinates);
+    });
+}
+
+
+
+
+
+
+function drawLabel() {
+    viewer.entities.add({
+        position : Cesium.Cartesian3.fromDegrees(-75.1641667, 39.9522222),
+        label : {
+            text : 'Philadelphia',
+            font : '24px Helvetica',
+            fillColor : Cesium.Color.WHITE,
+            outlineColor : Cesium.Color.BLACK,
+            outlineWidth : 2,
+            style : Cesium.LabelStyle.FILL_AND_OUTLINE
+        }
     });
 }
