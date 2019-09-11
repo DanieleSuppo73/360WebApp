@@ -117,7 +117,7 @@ $(document).ready(function () {
       return false;
     }
 
-    // find intersection of ray from camera to the center of the window
+    /// find intersection of ray from camera (to the center of the window) and 3d terrain
     var elmnt = document.getElementById("map");
     var windowCoordinates = new Cesium.Cartesian2(elmnt.offsetHeight / 2, elmnt.offsetWidth / 2);
     var ray = viewer.camera.getPickRay(windowCoordinates);

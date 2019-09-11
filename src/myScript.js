@@ -179,6 +179,7 @@ var main = {
               /// create a bounding sphere and fly there
               var allPositions = Cesium.Cartesian3.fromDegreesArrayHeights(allCoordinates)
               var boundingSphere = new Cesium.BoundingSphere.fromPoints(allPositions);
+
               viewer.camera.flyToBoundingSphere(boundingSphere, {
                 //offset: offset,
                 duration: 0
