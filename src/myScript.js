@@ -51,11 +51,24 @@ function GPX() {
         obj.coordinates.push(wpt.lon, wpt.lat); // push without elevation
       });
 
-      /// get the height for each coordinate and draw the polyline
-      insertHeightInCoordinates(obj.coordinates, drawPolyline);
+      // /// get the height for each coordinate and draw the polyline
+      // insertHeightInCoordinates(obj.coordinates, drawPolyline);
 
       /// callback
-      if (callback) callback();
+      //if (callback) callback();
+
+      // /// get the height for each coordinate and draw the polyline
+      // insertHeightInCoordinates(obj.coordinates, createBoundingSphere);
+
+      /// add the height, sampled from the terrain
+      insertHeightInCoordinates(obj.coordinates, function () {
+
+        /// draw the polyline grom GPX
+        drawPolyline(obj.coordinates);
+
+        /// call the callback
+        callback();
+      });
     });
   }
 }
@@ -122,16 +135,16 @@ var main = {
 
             /// create map label
             main.labels.push(viewer.entities.add({
-              position : Cesium.Cartesian3.fromDegrees(longitude, latitude),
-              label : {
-                  text : text,
-                  font : size.toString() + 'px sans-serif',
-                  fillColor : Cesium.Color.WHITE,
-                  outlineColor : Cesium.Color.BLACK,
-                  outlineWidth : 2,
-                  style : Cesium.LabelStyle.FILL_AND_OUTLINE
+              position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
+              label: {
+                text: text,
+                font: size.toString() + 'px sans-serif',
+                fillColor: Cesium.Color.WHITE,
+                outlineColor: Cesium.Color.BLACK,
+                outlineWidth: 2,
+                style: Cesium.LabelStyle.FILL_AND_OUTLINE
               }
-          }));
+            }));
 
           }
         });
@@ -142,13 +155,36 @@ var main = {
       main.gpxList = [];
       if (xmlDoc.getElementsByTagName("GPX").length != 0) {
         var i;
+        var ii = 0;
         var x = xmlDoc.getElementsByTagName("GPX");
-        
+
         for (i = 0; i < x.length; i++) {
           main.gpxList[i] = new GPX;
           main.gpxList[i].url = x[i].getElementsByTagName("GPX_URL")[0].childNodes[0].nodeValue;
           main.gpxList[i].name = x[i].getElementsByTagName("GPX_NAME")[0].childNodes[0].nodeValue;
-          main.gpxList[i].load();
+          main.gpxList[i].load(function () {
+
+            /// this is the callback when all the coordinates of this gpx are loaded
+            ii++;
+            /// when all gpx coordinates are loaded do this:
+            if (ii == x.length) {
+              console.log("terminato di caricare tutti i GPX!");
+
+              /// create an array with all coordinates from all GPX
+              var allCoordinates = [];
+              for (y = 0; y < main.gpxList.length; y++) {
+                allCoordinates.push.apply(allCoordinates, main.gpxList[y].coordinates);
+              }
+
+              /// create a bounding sphere and fly to it
+              var allPositions = Cesium.Cartesian3.fromDegreesArrayHeights(allCoordinates)
+              var boundingSphere = new Cesium.BoundingSphere.fromPoints(allPositions);
+              viewer.camera.flyToBoundingSphere(boundingSphere, {
+                //offset: offset,
+                duration: 0
+            });
+            }
+          });
         }
       }
 
@@ -246,8 +282,8 @@ var main = {
 
 
 
-main.load("data/Venezia_LidoPellestrina/main.xml");
-//main.load("data/Alessandria/main.xml");
+//main.load("data/Venezia_LidoPellestrina/main.xml");
+main.load("data/Alessandria/main.xml");
 
 
 
