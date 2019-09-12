@@ -182,23 +182,6 @@ $(document).ready(function () {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   $("#turnUp").mousedown(function () {
     $(this).css('opacity', '1');
     if (timer != null) {
@@ -209,11 +192,16 @@ $(document).ready(function () {
     var pitch = viewer.camera.pitch;
 
     timer = setInterval(function () {
-      pitch -= 0.007;
-      var position = getPointFromCamera();
-      viewer.camera.lookAt(position,
-          new Cesium.HeadingPitchRange(viewer.camera.heading, pitch, cameraProperties.range));
-    }, 50);
+
+      if (viewer.camera.heading > -0.1){
+        pitch -= 0.007;
+        var position = getPointFromCamera();
+        viewer.camera.lookAt(position,
+            new Cesium.HeadingPitchRange(viewer.camera.heading, pitch, cameraProperties.range));
+        //console.log(viewer.camera.pitch);
+      }
+
+    }, 40);
     return false;
   });
   $("#turnUp").mouseup(function () {
@@ -257,12 +245,35 @@ $(document).ready(function () {
     }
     var pitch = viewer.camera.pitch;
 
+
+
     timer = setInterval(function () {
-      pitch += 0.007;
-      var position = getPointFromCamera();
-      viewer.camera.lookAt(position,
-          new Cesium.HeadingPitchRange(viewer.camera.heading, pitch, cameraProperties.range));
-    }, 50);
+
+
+      // if (viewer.camera.heading > 0.3){
+      //   console.log("SOPRA");
+      // }
+      // else
+      // {
+      //   console.log("SOTTO");
+      // }
+
+
+      if (viewer.camera.heading > -0.1){
+         //console.log("TURN DOWN: " + viewer.camera.pitch);
+        pitch += 0.007;
+        var position = getPointFromCamera();
+        viewer.camera.lookAt(position,
+            new Cesium.HeadingPitchRange(viewer.camera.heading, pitch, cameraProperties.range));
+
+      }
+
+
+
+
+
+
+    }, 40);
     return false;
   });
   $("#turnDown").mouseup(function () {
