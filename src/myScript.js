@@ -292,8 +292,8 @@ var main = {
 
 
 //main.load("data/Venezia_LioPiccolo/main.xml");
-main.load("data/Venezia_LidoPellestrina/main.xml");
-//main.load("data/Alessandria/main.xml");
+//main.load("data/Venezia_LidoPellestrina/main.xml");
+main.load("data/Alessandria/main.xml");
 
 
 ////////////////////////////
@@ -432,7 +432,12 @@ function aaa() {
     ));
 
 
-    var position = viewer.scene.globe.pick(ray, viewer.scene);
+    //var position = viewer.scene.globe.pick(ray, viewer.scene);
+
+    var position = getPointFromCamera();
+
+
+
     // var range = Cesium.Cartesian3.distance(position, camera.position);
     // console.log(range);
 
@@ -452,7 +457,7 @@ function aaa() {
     //     console.log('Looking at space?');
     // }
 
-    pitch += 0.003;
+    pitch += 0.001;
 
     viewer.camera.lookAt(position,
         new Cesium.HeadingPitchRange(viewer.camera.heading, viewer.camera.pitch + pitch, cameraProperties.range));

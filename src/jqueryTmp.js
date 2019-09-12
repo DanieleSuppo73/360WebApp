@@ -1,3 +1,23 @@
+
+
+/// Return the Cartesian3 point that is the intersection
+/// of a ray from the camera to the specified x and y canvas positions
+/// and the 3d terrain
+
+function getPointFromCamera(xCanvas = null, yCanvas = null){
+  const canvas = viewer.scene.canvas;
+  if (xCanvas === null || yCanvas === null){
+    xCanvas = canvas.clientWidth / 2;
+    yCanvas = canvas.clientHeight / 2;
+  }
+  const ray = viewer.camera.getPickRay(new Cesium.Cartesian2(
+      Math.round(xCanvas), Math.round(yCanvas)
+  ));
+  return point = viewer.scene.globe.pick(ray, viewer.scene);
+}
+
+
+
 var camera = viewer.scene.camera;
 var cameraProperties = {
   minHeight: 0.4, // in Km
@@ -12,15 +32,8 @@ var cameraProperties = {
   },
 
   get range() { // in meters
-    var canvas = viewer.scene.canvas;
-    var ellipsoid = viewer.scene.mapProjection.ellipsoid;
-    var ray = viewer.camera.getPickRay(new Cesium.Cartesian2(
-        Math.round(canvas.clientWidth / 2),
-        Math.round(canvas.clientHeight / 2)
-    ));
-    var intersectionPoint = viewer.scene.globe.pick(ray, viewer.scene);
-    return Cesium.Cartesian3.distance(camera.positionWC, intersectionPoint);
-  }
+    return Cesium.Cartesian3.distance(camera.positionWC, getPointFromCamera());
+  },
 };
 
 
@@ -115,30 +128,161 @@ $(document).ready(function () {
       timer = null;
       return false;
     }
-
-    /// find intersection of ray from camera (to the center of the window) and 3d terrain
-    var elmnt = document.getElementById("map");
-    var windowCoordinates = new Cesium.Cartesian2(elmnt.offsetHeight / 2, elmnt.offsetWidth / 2);
-    var ray = viewer.camera.getPickRay(windowCoordinates);
-    var intersectionPoint = viewer.scene.globe.pick(ray, viewer.scene);
-
-
+    const target = getPointFromCamera();
     timer = setInterval(function () {
-      camera.rotate(intersectionPoint, 0.005);
+      camera.rotate(target, 0.005);
     }, 10);
     return false;
-  })
+  });
   $("#turnLeft").mouseup(function () {
     $(this).css('opacity', '0.7');
     clearInterval(timer);
     timer = null;
     return false;
-  })
+  });
   $("#turnLeft").mouseleave(function () {
     $(this).css('opacity', '0.7');
     clearInterval(timer);
     timer = null;
     return false;
-  })
+  });
+
+
+
+
+
+
+  $("#turnRight").mousedown(function () {
+    $(this).css('opacity', '1');
+    if (timer != null) {
+      clearInterval(timer);
+      timer = null;
+      return false;
+    }
+    const target = getPointFromCamera();
+    timer = setInterval(function () {
+      camera.rotate(target, -0.005);
+    }, 10);
+    return false;
+  });
+  $("#turnRight").mouseup(function () {
+    $(this).css('opacity', '0.7');
+    clearInterval(timer);
+    timer = null;
+    return false;
+  });
+  $("#turnRight").mouseleave(function () {
+    $(this).css('opacity', '0.7');
+    clearInterval(timer);
+    timer = null;
+    return false;
+  });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  $("#turnUp").mousedown(function () {
+    $(this).css('opacity', '1');
+    if (timer != null) {
+      clearInterval(timer);
+      timer = null;
+      return false;
+    }
+    var pitch = viewer.camera.pitch;
+
+    timer = setInterval(function () {
+      pitch -= 0.007;
+      var position = getPointFromCamera();
+      viewer.camera.lookAt(position,
+          new Cesium.HeadingPitchRange(viewer.camera.heading, pitch, cameraProperties.range));
+    }, 50);
+    return false;
+  });
+  $("#turnUp").mouseup(function () {
+    $(this).css('opacity', '0.7');
+    clearInterval(timer);
+    timer = null;
+    viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
+    return false;
+  });
+  $("#turnUp").mouseleave(function () {
+    $(this).css('opacity', '0.7');
+    clearInterval(timer);
+    timer = null;
+    viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
+    return false;
+  });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  $("#turnDown").mousedown(function () {
+    $(this).css('opacity', '1');
+    if (timer != null) {
+      clearInterval(timer);
+      timer = null;
+      return false;
+    }
+    var pitch = viewer.camera.pitch;
+
+    timer = setInterval(function () {
+      pitch += 0.007;
+      var position = getPointFromCamera();
+      viewer.camera.lookAt(position,
+          new Cesium.HeadingPitchRange(viewer.camera.heading, pitch, cameraProperties.range));
+    }, 50);
+    return false;
+  });
+  $("#turnDown").mouseup(function () {
+    $(this).css('opacity', '0.7');
+    clearInterval(timer);
+    timer = null;
+    viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
+    return false;
+  });
+  $("#turnDown").mouseleave(function () {
+    $(this).css('opacity', '0.7');
+    clearInterval(timer);
+    timer = null;
+    viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
+    return false;
+  });
+
+
+
+
+
 
 });
