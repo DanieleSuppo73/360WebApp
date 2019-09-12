@@ -12,17 +12,16 @@ var cameraProperties = {
   },
 
   get range() { // in meters
-    /// get the size of the window
-    var window = document.getElementById("map");
-    // find intersection of ray from camera to the center of the window
+    var canvas = viewer.scene.canvas;
     var ellipsoid = viewer.scene.mapProjection.ellipsoid;
-    var windowCoordinates = new Cesium.Cartesian2(window.offsetHeight / 2, window.offsetWidth / 2);
-    var ray = viewer.camera.getPickRay(windowCoordinates);
-    var intersection = Cesium.IntersectionTests.rayEllipsoid(ray, ellipsoid);
-    var intersectionPoint = Cesium.Ray.getPoint(ray, intersection.start);
+    var ray = viewer.camera.getPickRay(new Cesium.Cartesian2(
+        Math.round(canvas.clientWidth / 2),
+        Math.round(canvas.clientHeight / 2)
+    ));
+    var intersectionPoint = viewer.scene.globe.pick(ray, viewer.scene);
     return Cesium.Cartesian3.distance(camera.positionWC, intersectionPoint);
   }
-}
+};
 
 
 
