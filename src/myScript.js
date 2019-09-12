@@ -419,87 +419,12 @@ function DisplayPlayerMessage(value) {
 
 
 /////////////////////////////////////// TEST ///////////////////////////////////
-var pitch = 0;
+
 function aaa() {
 
     viewer.scene.globe.depthTestAgainstTerrain = true;
 
-    var canvas = viewer.scene.canvas;
 
-    var ray = camera.getPickRay(new Cesium.Cartesian2(
-        Math.round(canvas.clientWidth / 2),
-        Math.round(canvas.clientHeight / 2)
-    ));
-
-
-    //var position = viewer.scene.globe.pick(ray, viewer.scene);
-
-    var position = getPointFromCamera();
-
-
-
-    // var range = Cesium.Cartesian3.distance(position, camera.position);
-    // console.log(range);
-
-
-    // if (Cesium.defined(position)) {
-    //     var cartographic = Cesium.Ellipsoid.WGS84.cartesianToCartographic(position);
-    //     var height = cartographic.height;
-    //     //range = Cesium.Cartesian3.distance(position, camera.position);
-    //
-    //     // alert('Lat/Lon: [' +
-    //     //     Cesium.Math.toDegrees(cartographic.latitude).toFixed(2) + ',' +
-    //     //     Cesium.Math.toDegrees(cartographic.longitude).toFixed(2) + ']'+
-    //     //     ' height: ' + height.toFixed(2) +
-    //     //     ' range: ' + range.toFixed(2)
-    //     // );
-    // } else {
-    //     console.log('Looking at space?');
-    // }
-
-    pitch += 0.001;
-
-    viewer.camera.lookAt(position,
-        new Cesium.HeadingPitchRange(viewer.camera.heading, viewer.camera.pitch + pitch, cameraProperties.range));
-
-
-    viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//     /// find intersection of ray from camera (to the center of the window) and 3d terrain
-//     var elmnt = document.getElementById("map");
-//     var windowCoordinates = new Cesium.Cartesian2(elmnt.offsetHeight / 2, elmnt.offsetWidth / 2);
-//     var ray = viewer.camera.getPickRay(windowCoordinates);
-//     //var intersectionPoint = viewer.scene.globe.pick(ray, viewer.scene);
-//     var intersectionPoint = viewer.scene.pickPosition(windowCoordinates);
-//
-
-// viewer.entities.add({
-//         position: position,
-//         billboard: {
-//             image: 'images/pin_icon.svg',
-//             color: new Cesium.Color(1,0.5,0.3,1),
-//             width: 10,
-//             height: 10,
-//             verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-//             heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
-//         }
-//     });
 
 }
 

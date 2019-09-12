@@ -18,6 +18,9 @@ var viewer = new Cesium.Viewer('map', {
 
 });
 
+/// enable depth
+viewer.scene.globe.depthTestAgainstTerrain = true;
+
 
 var scene = viewer.scene;
 var mapCamera = scene.camera;
