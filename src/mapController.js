@@ -25,6 +25,10 @@ viewer.scene.globe.depthTestAgainstTerrain = true;
 var scene = viewer.scene;
 var mapCamera = scene.camera;
 
+scene.skyAtmosphere.brightnessShift = 0.3;
+scene.skyAtmosphere.hueShift = 0.04;
+scene.skyAtmosphere.saturationShift = -0.01;
+
 
 
 viewer.scene.globe.maximumScreenSpaceError = 1.2; /// default is 2

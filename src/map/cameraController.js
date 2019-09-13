@@ -11,6 +11,7 @@ function getPointFromCamera(xCanvas = null, yCanvas = null) {
     const ray = viewer.camera.getPickRay(new Cesium.Cartesian2(
         Math.round(xCanvas), Math.round(yCanvas)
     ));
+
     return point = viewer.scene.globe.pick(ray, viewer.scene);
 }
 

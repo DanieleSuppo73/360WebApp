@@ -75,6 +75,7 @@ function GPX() {
 /// to setup everything
 ///////////////////////////////
 var main = {
+    isLoaded: false,
     title: "",
     subtitle: "",
     videoUrl: "",
@@ -121,11 +122,16 @@ var main = {
             //                 position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
             //                 label: {
             //                     text: text,
-            //                     font: size.toString() + 'px sans-serif',
+            //                     //font: size.toString() + 'px acuminBold',
+            //                     font: '57px acuminBold',
             //                     fillColor: Cesium.Color.WHITE,
             //                     outlineColor: Cesium.Color.BLACK,
             //                     outlineWidth: 2,
-            //                     style: Cesium.LabelStyle.FILL_AND_OUTLINE
+            //                     style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+            //                     verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+            //                     heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
+            //                     pixelOffset: new Cesium.Cartesian2(0, -5),
+            //                     scale: 0.3
             //                 }
             //             }));
             //         }
@@ -168,6 +174,7 @@ var main = {
                             });
 
                             $("#mapLoader").fadeOut("slow");
+                            main.isLoaded = true;
                         }
                     });
                 }
@@ -274,7 +281,7 @@ var main = {
                             });
 
                             $("#mapLoader").fadeOut("slow");
-
+                            main.isLoaded = true;
                         });
                     }
                 });
@@ -292,8 +299,8 @@ var main = {
 
 
 //main.load("data/Venezia_LioPiccolo/main.xml");
-//main.load("data/Venezia_LidoPellestrina/main.xml");
-main.load("data/Alessandria/main.xml");
+main.load("data/Venezia_LidoPellestrina/main.xml");
+//main.load("data/Alessandria/main.xml");
 
 
 ////////////////////////////
@@ -419,93 +426,6 @@ function DisplayPlayerMessage(value) {
 
 
 /////////////////////////////////////// TEST ///////////////////////////////////
-
-function aaa() {
-
-    viewer.scene.globe.depthTestAgainstTerrain = true;
-
-
-
-}
-
-
-function getLabelsFromGeoDB() {
-
-    /// find intersection of ray from camera (to the center of the window) and 3d terrain
-    var elmnt = document.getElementById("map");
-    var windowCoordinates = new Cesium.Cartesian2(elmnt.offsetHeight / 2, elmnt.offsetWidth / 2);
-    var ray = viewer.camera.getPickRay(windowCoordinates);
-    var intersectionPoint = viewer.scene.globe.pick(ray, viewer.scene);
-
-
-    var cartographic = Cesium.Cartographic.fromCartesian(intersectionPoint);
-    var longitude = Cesium.Math.toDegrees(cartographic.longitude).toFixed(2);
-    var latitude = Cesium.Math.toDegrees(cartographic.latitude).toFixed(2);
-    console.log(latitude);
-    console.log(longitude);
-
-
-    var radius = 30;
-    var minPopulation = 5000;
-
-
-    var data = null;
-
-    var xhr = new XMLHttpRequest();
-    xhr.withCredentials = true;
-
-    xhr.addEventListener("readystatechange", function () {
-        if (this.readyState === this.DONE) {
-            // console.log(this.responseText);
-
-            var allObj = JSON.parse(this.responseText);
-            console.log(allObj);
-
-            var data = allObj.data;
-            console.log("CI SONO " + data.length);
-
-            for (i = 0; i < data.length; i++) {
-
-                var result = data[i];
-
-                // viewer.entities.add({
-                //     position: Cesium.Cartesian3.fromDegrees(result.longitude, result.latitude),
-                //     billboard: {
-                //         image: 'images/pin_icon.svg',
-                //         width: 10,
-                //         height: 10,
-                //         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-                //         heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
-                //     }
-                // });
-
-
-                /// create map label
-                main.labels.push(viewer.entities.add({
-                    position: Cesium.Cartesian3.fromDegrees(result.longitude, result.latitude),
-                    label: {
-                        text: result.city,
-                        font: '16' + 'px sans-serif',
-                        fillColor: Cesium.Color.WHITE,
-                        outlineColor: Cesium.Color.BLACK,
-                        outlineWidth: 2,
-                        style: Cesium.LabelStyle.FILL_AND_OUTLINE
-                    }
-                }));
-
-
-            }
-        }
-    });
-
-
-    xhr.open("GET", "https://wft-geo-db.p.rapidapi.com/v1/geo/locations/%2B" + latitude + "%2B"
-        + longitude + "/nearbyCities?limit=10&languageCode=IT&minPopulation=" + minPopulation + "&radius=" + radius);
-    xhr.setRequestHeader("x-rapidapi-host", "wft-geo-db.p.rapidapi.com");
-    xhr.setRequestHeader("x-rapidapi-key", "ce699b059emshab8963e751a141dp1fb327jsn457d60aff686");
-
-    xhr.send(data);
-}
 
 
 function getFromGeoData() {
