@@ -12,7 +12,8 @@ function getPointFromCamera(xCanvas = null, yCanvas = null) {
         Math.round(xCanvas), Math.round(yCanvas)
     ));
 
-    return point = viewer.scene.globe.pick(ray, viewer.scene);
+    const point = viewer.scene.globe.pick(ray, viewer.scene);
+    return point;
 }
 
 

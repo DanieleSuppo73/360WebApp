@@ -1,23 +1,6 @@
 
-// viewer.entities.add({
-//     position: Cesium.Cartesian3.fromDegrees(12.3153133, 45.4392717),
-//     label: {
-//         text: "Venezia",
-//         //font: size.toString() + 'px acuminBold',
-//         font: '20px Helvetica',
-//         fillColor: Cesium.Color.WHITE,
-//         outlineColor: Cesium.Color.BLACK,
-//         outlineWidth: 2,
-//         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-//         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-//         heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
-//         pixelOffset: new Cesium.Cartesian2(0, -5),
-//         scale: 1
-//     }
-// });
-// viewer.camera.moveStart.addEventListener(() => {console.log("START");});
 viewer.camera.changed.addEventListener(() => {
-    console.log("CHANGED");
+    console.log("------ MAP changed ------");
     getLabelsFromGeoDB();
 });
 viewer.camera.moveEnd.addEventListener(() => {console.log("END");});
@@ -36,26 +19,25 @@ function TEST() {
             heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
         }
     });
-
-
 }
 
 
-/// load cities from https://rapidapi.com/wirefreethought/api/geodb-cities/details
+
 var isLoading = false;
 function getLabelsFromGeoDB() {
     if (!main.isLoaded || isLoading) return;
 
-    console.log("Loading cities...");
-    console.log("radius " + cameraProperties.range / 4000);
+
+    //console.log("radius " + cameraProperties.range / 4000);
 
     /// since when the map is loading the 1st time the camera range is wrong,
     /// we must wait for a reasonable range is detected before to load
     let cameraRange = cameraProperties.range;
     if (cameraRange > 50000){
+        console.log("attempt refused...");
         let waitForReasonableRange = setInterval(function (handle) {
-            console.log("attempt refused...");
             if (cameraProperties.range <= 50000){
+                console.log("2nd attempt accepted!");
                 clearInterval(waitForReasonableRange);
                 loader();
             }
@@ -65,29 +47,25 @@ function getLabelsFromGeoDB() {
         console.log("attempt accepted!");
         loader();
     }
+}
 
 
+/// load cities from https://rapidapi.com/wirefreethought/api/geodb-cities/details
+function loader(){
+    isLoading = true;
+    console.log("Loading cities...");
 
-    /// find intersection of ray from camera (to the center of the window) and 3d terrain
-    // var elmnt = document.getElementById("map");
-    // var windowCoordinates = new Cesium.Cartesian2(elmnt.offsetHeight / 2, elmnt.offsetWidth / 2);
-    // var ray = viewer.camera.getPickRay(windowCoordinates);
-    // var intersectionPoint = viewer.scene.globe.pick(ray, viewer.scene);
+    /// wait 1 second before to accept a new request
+    setTimeout(function () {
+        isLoading = false;
+    }, 2000);
 
+    let cartographic = Cesium.Cartographic.fromCartesian(getPointFromCamera());
+    let longitude = Cesium.Math.toDegrees(cartographic.longitude).toFixed(2);
+    let latitude = Cesium.Math.toDegrees(cartographic.latitude).toFixed(2);
 
-    // var cartographic = Cesium.Cartographic.fromCartesian(getPointFromCamera());
-    // pp = Cesium.Cartographic.fromCartesian(getPointFromCamera());
-    // var longitude = Cesium.Math.toDegrees(cartographic.longitude).toFixed(2);
-    // var latitude = Cesium.Math.toDegrees(cartographic.latitude).toFixed(2);
-    // console.log(latitude);
-    // console.log(longitude);
-    //
-    // var radius = cameraProperties.range / 4000;
-    // console.log("radius " + radius);
-    // var minPopulation = 15000;
+    console.log("Position: " + latitude, longitude);
 
-    var longitude = 12.24;
-    var latitude = 45.40;
     var radius = 15;
     var minPopulation = 15000;
 
@@ -101,7 +79,7 @@ function getLabelsFromGeoDB() {
             // console.log(this.responseText);
 
             var allObj = JSON.parse(this.responseText);
-            console.log(allObj);
+            //console.log(allObj);
 
             var data = allObj.data;
             //console.log("CI SONO " + data.length);
@@ -114,6 +92,9 @@ function getLabelsFromGeoDB() {
 
                     /// check if this city is already loaded
                     if (!main.labels.includes(result.city)){
+
+                        console.log("new city: " + result.city);
+
                         /// create map label
                         viewer.entities.add({
                             position: Cesium.Cartesian3.fromDegrees(result.longitude, result.latitude),
@@ -132,6 +113,9 @@ function getLabelsFromGeoDB() {
 
                         main.labels.push(result.city);
                     }
+                    else{
+                        console.log("refused city: " + result.city);
+                    }
                 }
             }
         }
@@ -142,24 +126,8 @@ function getLabelsFromGeoDB() {
         + longitude + "/nearbyCities?limit=10&languageCode=IT&minPopulation=" + minPopulation + "&radius=" + radius);
     xhr.setRequestHeader("x-rapidapi-host", "wft-geo-db.p.rapidapi.com");
     xhr.setRequestHeader("x-rapidapi-key", "ce699b059emshab8963e751a141dp1fb327jsn457d60aff686");
-
     xhr.send(data);
 }
 
-
-function loader(){
-    isLoading = true;
-
-    /// wait 1 second before to accept a new request
-    setTimeout(function () {
-        isLoading = false;
-    }, 1200);
-
-    let cartographic = Cesium.Cartographic.fromCartesian(getPointFromCamera());
-    let longitude = Cesium.Math.toDegrees(cartographic.longitude).toFixed(2);
-    let latitude = Cesium.Math.toDegrees(cartographic.latitude).toFixed(2);
-
-    console.log(latitude, longitude);
-}
 
 
