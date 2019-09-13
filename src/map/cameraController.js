@@ -48,7 +48,12 @@ var cameraProperties = {
     },
 
     get range() { // in meters
-        return Cesium.Cartesian3.distance(camera.positionWC, getPointFromCamera());
+        let p = getPointFromCamera();
+        if (p === undefined){
+            p = new Cesium.Cartesian3(0,0,0);
+            alert("MAP ERROR");
+        }
+        return Cesium.Cartesian3.distance(camera.positionWC, p);
     },
 };
 

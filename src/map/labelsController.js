@@ -1,64 +1,66 @@
 
+var mapChaged = false;
 viewer.camera.changed.addEventListener(() => {
-    console.log("------ MAP changed ------");
-    getLabelsFromGeoDB();
+    mapChaged = true;
 });
-viewer.camera.moveEnd.addEventListener(() => {console.log("END");});
+viewer.camera.moveEnd.addEventListener(() => {
+    if (mapChaged){
+        mapChaged = false;
+        console.log("------ MAP changed ------");
+        mapLabels.load();
+    }
+});
 
-//position : Cesium.Cartesian3.fromDegrees(12.3153133, 45.4392717),
 
-function TEST() {
-    console.log(long, lati);
-    viewer.entities.add({
-        position: pp,
-        billboard: {
-            image: 'images/pin_icon.svg',
-            width: 30,
-            height: 30,
-            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-            heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
+
+var mapLabels = {
+    isLoading : false, /// do we have finished to load the cities?
+    isAvailable : true, /// does the webserver can accept a new request?
+    requestTime : 2000, /// time to wait from each request to the webserver
+    small : [],
+    medium : [],
+    large : [],
+    load: function () {
+        if (!main.isLoaded || mapLabels.isLoading || !mapLabels.isAvailable) return;
+
+        /// since when the map is loading the 1st time the camera range is wrong,
+        /// we must wait for a reasonable range is detected before to load
+        let cameraRange = cameraProperties.range;
+        if (cameraRange > 50000){
+            console.log("attempt refused...");
+            let waitForReasonableRange = setInterval(function (handle) {
+                if (cameraProperties.range <= 50000){
+                    console.log("2nd attempt accepted!");
+                    clearInterval(waitForReasonableRange);
+                    loader(cameraRange);
+                }
+            }, 1000);
         }
-    });
-}
-
-
-
-var isLoading = false;
-function getLabelsFromGeoDB() {
-    if (!main.isLoaded || isLoading) return;
-
-
-    //console.log("radius " + cameraProperties.range / 4000);
-
-    /// since when the map is loading the 1st time the camera range is wrong,
-    /// we must wait for a reasonable range is detected before to load
-    let cameraRange = cameraProperties.range;
-    if (cameraRange > 50000){
-        console.log("attempt refused...");
-        let waitForReasonableRange = setInterval(function (handle) {
-            if (cameraProperties.range <= 50000){
-                console.log("2nd attempt accepted!");
-                clearInterval(waitForReasonableRange);
-                loader();
-            }
-        }, 1000);
+        else {
+            console.log("attempt accepted!");
+            loader(cameraRange);
+        }
     }
-    else {
-        console.log("attempt accepted!");
-        loader();
-    }
-}
+};
+
+
 
 
 /// load cities from https://rapidapi.com/wirefreethought/api/geodb-cities/details
-function loader(){
-    isLoading = true;
+var waitForNewRequest = null;
+function loader(cameraRange){
+    mapLabels.isLoading = true;
+    mapLabels.isAvailable = false;
     console.log("Loading cities...");
 
-    /// wait 1 second before to accept a new request
-    setTimeout(function () {
-        isLoading = false;
-    }, 2000);
+    /// wait 2 seconds before to accept a new request
+    if (waitForNewRequest != null){
+        clearTimeout(waitForNewRequest);
+    }
+    waitForNewRequest = setTimeout(function () {
+        mapLabels.isAvailable = true;
+        waitForNewRequest = null;
+    }, mapLabels.requestTime);
 
     let cartographic = Cesium.Cartographic.fromCartesian(getPointFromCamera());
     let longitude = Cesium.Math.toDegrees(cartographic.longitude).toFixed(2);
@@ -66,7 +68,9 @@ function loader(){
 
     console.log("Position: " + latitude, longitude);
 
-    var radius = 15;
+    //var radius = 15;
+    var radius = cameraRange / 1500;
+    console.log("radius: " + radius);
     var minPopulation = 15000;
 
     var data = null;
@@ -78,11 +82,18 @@ function loader(){
         if (this.readyState === this.DONE) {
             // console.log(this.responseText);
 
+            labelsCreating = true;
+
             var allObj = JSON.parse(this.responseText);
             //console.log(allObj);
 
             var data = allObj.data;
-            //console.log("CI SONO " + data.length);
+
+            if (data === undefined) return;
+            if (data.length === 0){
+                console.log("no cities with " + minPopulation + " people in this area");
+            }
+
 
             for (i = 0; i < data.length; i++) {
 
@@ -118,6 +129,7 @@ function loader(){
                     }
                 }
             }
+            mapLabels.isLoading = false;
         }
     });
 
