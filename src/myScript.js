@@ -173,7 +173,7 @@ var main = {
                                 duration: 0
                             });
 
-                            $("#mapLoader").fadeOut("slow");
+                            //$("#mapLoader").fadeOut("slow");
                             main.isLoaded = true;
                         }
                     });
@@ -280,7 +280,7 @@ var main = {
                                 duration: 0
                             });
 
-                            $("#mapLoader").fadeOut("slow");
+                            //$("#mapLoader").fadeOut("slow");
                             main.isLoaded = true;
                         });
                     }

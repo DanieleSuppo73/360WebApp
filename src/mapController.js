@@ -33,6 +33,17 @@ scene.skyAtmosphere.saturationShift = -0.01;
 
 viewer.scene.globe.maximumScreenSpaceError = 1.2; /// default is 2
 
+
+var mapReady = false;
+viewer.scene.globe.tileLoadProgressEvent.addEventListener((value) => {
+    if (! mapReady && value === 0){
+        mapReady = true;
+        $("#mapLoader").fadeOut("slow");
+    }
+});
+
+
+
 var mapController = {
     flyToElement: function (element) {
         heading = viewer.scene.camera.heading;

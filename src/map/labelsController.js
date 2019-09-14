@@ -2,6 +2,7 @@
 var mapChaged = false;
 viewer.camera.changed.addEventListener(() => {
     mapChaged = true;
+    //mapLabels.changeLabelsOpacity();
 });
 viewer.camera.moveEnd.addEventListener(() => {
     if (mapChaged){
@@ -12,14 +13,33 @@ viewer.camera.moveEnd.addEventListener(() => {
 });
 
 
+// function checkLabelsVisibility () {
+//     console.log("check visibility");
+//     let oldPitch = viewer.camera.pitch;
+//     let oldHeading = viewer.camera.heading;
+//     setInterval(function () {
+//         let pitch = viewer.camera.pitch;
+//         if (pitch !== oldPitch) {
+//             oldPitch = pitch;
+//            mapLabels.changeLabelsOpacity();
+//         }
+//     }, 100);
+// }
+//
+//
+// /// start to check for the visibility of all the labels
+// checkLabelsVisibility();
 
-var mapLabels = {
+
+
+const mapLabels = {
     isLoading : false, /// do we have finished to load the cities?
     isServerAvailable : true, /// does the webserver can accept a new request?ù
-    requestTime : 2000, /// time to wait from each request to the webserver
+    serverRequestDelay : 2000, /// time to wait from each request to the webserver
     small : [],
     medium : [],
     large : [],
+    labels : [],
 
     load: function () {
         if (!main.isLoaded || mapLabels.isLoading || !mapLabels.isServerAvailable) return;
@@ -49,15 +69,6 @@ var mapLabels = {
             mapLabels.isServerAvailable = false;
             console.log("Loading cities...");
 
-            /// wait 2 seconds before to accept a new request
-            // if (waitForNewRequest != null){
-            //     clearTimeout(waitForNewRequest);
-            // }
-            // waitForNewRequest = setTimeout(function () {
-            //     mapLabels.isServerAvailable = true;
-            //     waitForNewRequest = null;
-            // }, mapLabels.requestTime);
-
             /// get the coordinates in the center of the window
             let cartographic = Cesium.Cartographic.fromCartesian(getPointFromCamera());
             let longitude = Cesium.Math.toDegrees(cartographic.longitude).toFixed(2);
@@ -71,21 +82,25 @@ var mapLabels = {
             /// load mayor cities
             let minPopulation = 50000;
             let font = 'bold 16px Helvetica';
+            let minDistance = 50000;
+            let maxDistance = 80000;
             getDataFromWebServer(function () {
 
                 /// load minor cities
                 setTimeout(function () {
                     minPopulation = 10000;
-                    font = '11px Helvetica';
+                    font = '12px Helvetica';
+                    minDistance = 30000;
+                    maxDistance = 40000;
                     getDataFromWebServer(function () {
                         console.log("end of request for this frame");
                         mapLabels.isLoading = false;
 
                         /// reset server available
                         setTimeout(function () { mapLabels.isServerAvailable = true;
-                        }, mapLabels.requestTime);
+                        }, mapLabels.serverRequestDelay);
                     })
-                }, mapLabels.requestTime);
+                }, mapLabels.serverRequestDelay);
             });
 
 
@@ -116,7 +131,7 @@ var mapLabels = {
                             if (result.type === "CITY"){
 
                                 /// check if this city is already loaded
-                                if (!main.labels.includes(result.city)){
+                                if (!mapLabels.labels.includes(result.city)){
 
                                     console.log("new city: " + result.city);
 
@@ -133,10 +148,12 @@ var mapLabels = {
                                             verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
                                             heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
                                             pixelOffset: new Cesium.Cartesian2(0, -5),
+                                            translucencyByDistance : new Cesium.NearFarScalar(minDistance, 1.0,
+                                                maxDistance, 0.0),
                                         }
                                     });
 
-                                    main.labels.push(result.city);
+                                    mapLabels.labels.push(result.city);
                                 }
                                 else{
                                     console.log("refused city: " + result.city);
@@ -154,6 +171,16 @@ var mapLabels = {
                 xhr.setRequestHeader("x-rapidapi-key", "ce699b059emshab8963e751a141dp1fb327jsn457d60aff686");
                 xhr.send(data);
             }
+        }
+    },
+
+    changeLabelsOpacity : function () {
+        console.log("CHANGE LABELS OPACITY");
+
+        let range = cameraProperties.range;
+
+        for (i=0; i<mapLabels.medium; i++){
+
         }
     }
 };
