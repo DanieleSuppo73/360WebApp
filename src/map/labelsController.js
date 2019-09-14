@@ -81,7 +81,7 @@ const mapLabels = {
 
             /// load mayor cities
             let minPopulation = 50000;
-            let font = 'bold 16px Helvetica';
+            let font = 'bold 18px Roboto';
             let minDistance = 50000;
             let maxDistance = 80000;
             getDataFromWebServer(function () {
@@ -89,7 +89,7 @@ const mapLabels = {
                 /// load minor cities
                 setTimeout(function () {
                     minPopulation = 10000;
-                    font = '12px Helvetica';
+                    font = '14px Roboto';
                     minDistance = 30000;
                     maxDistance = 40000;
                     getDataFromWebServer(function () {

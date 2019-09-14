@@ -2,219 +2,223 @@
 <html lang="it">
 
 <head>
-  <meta charset='utf-8' />
-  <title>test</title>
-  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <meta charset='utf-8'/>
+    <title>test</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no'/>
 
-  <script src="https://cesiumjs.org/releases/1.61/Build/Cesium/Cesium.js"></script>
-  <link href="https://cesiumjs.org/releases/1.61/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+    <script src="https://cesiumjs.org/releases/1.61/Build/Cesium/Cesium.js"></script>
+    <link href="https://cesiumjs.org/releases/1.61/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
 
-  <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
-  <script src="https://cdn.rawgit.com/thiagopnts/clappr-video360/master/dist/clappr-video360.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
+    <script src="https://cdn.rawgit.com/thiagopnts/clappr-video360/master/dist/clappr-video360.min.js"></script>
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
-  <style>
-    @font-face {
-      font-family: acuminBold;
-      src: url(Acumin-BdPro.otf);
-    }
-    @font-face {
-      font-family: acuminRegular;
-      src: url(Acumin-RPro.otf);
-    }
+  <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
 
-    body {
-      margin: 5px;
-    }
+    <style>
+        @font-face {
+            font-family: acuminBold;
+            src: url(Acumin-BdPro.otf);
+        }
 
-    div {
-      box-sizing: border-box;
-    }
+        @font-face {
+            font-family: acuminRegular;
+            src: url(Acumin-RPro.otf);
+        }
 
-    .container {
-      max-width: 1200px;
-      height: 400px;
-      margin-left: auto;
-      margin-right: auto;
-    }
+        body {
+            margin: 5px;
+        }
 
-    #player {
-      float: left;
-      width: 63%;
-      height: 100%;
-      position: relative;
-    }
+        div {
+            box-sizing: border-box;
+        }
 
-    #playerOverlay {
-      z-index: 2;
-      height: 100%;
-      width: 100%;
-      top: 0;
-      left: 0;
-      position: absolute;
-      padding: 0;
-      pointer-events: none;
-    }
+        .container {
+            max-width: 1200px;
+            height: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
 
-    #playerTitleBackground {
-      position: absolute;
-      height: 100%;
-      width: 100%;
-    }
+        #player {
+            float: left;
+            width: 63%;
+            height: 100%;
+            position: relative;
+        }
 
-    #playerTitleBackgroundImage {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 50%;
-      /*
-  background-color: transparent;
-  background-repeat: repeat;*/
+        #playerOverlay {
+            z-index: 2;
+            height: 100%;
+            width: 100%;
+            top: 0;
+            left: 0;
+            position: absolute;
+            padding: 0;
+            pointer-events: none;
+        }
 
-      opacity: 0.6;
-    }
+        #playerTitleBackground {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+        }
 
-    #playerTitle {
-      position: absolute;
-      color: white;
-      bottom: 10px;
-      left: 40px;
-      font-family: acuminBold;
-    }
+        #playerTitleBackgroundImage {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            /*
+        background-color: transparent;
+        background-repeat: repeat;*/
 
-    #playerMessage {
-      position: absolute;
-      top: 0px;
-      left: 40px;
-      color: red;
-      font-size: 200%;
-      opacity: 0;
-    }
+            opacity: 0.6;
+        }
 
-    #map {
-      position: relative;
-      float: right;
-      width: 35%;
-      height: 100%;
-    }
+        #playerTitle {
+            position: absolute;
+            color: white;
+            bottom: 10px;
+            left: 40px;
+            font-family: acuminBold;
+        }
 
-    #mapLoader {
-      z-index: 10;
-      height: 100%;
-      width: 100%;
-      top: 0;
-      left: 0;
-      position: absolute;
-      padding: 0;
-      pointer-events: none;
-      background-color: white;
-    }
+        #playerMessage {
+            position: absolute;
+            top: 0px;
+            left: 40px;
+            color: red;
+            font-size: 200%;
+            opacity: 0;
+        }
 
-    #mapOverlay {
-      z-index: 2;
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-    }
+        #map {
+            position: relative;
+            float: right;
+            width: 35%;
+            height: 100%;
+        }
 
-    .mapButtons {
-      pointer-events: auto;
-    }
+        #mapLoader {
+            z-index: 10;
+            height: 100%;
+            width: 100%;
+            top: 0;
+            left: 0;
+            position: absolute;
+            padding: 0;
+            pointer-events: none;
+            background-color: white;
+        }
 
+        #mapOverlay {
+            z-index: 2;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
 
-    .cesium-widget-credits {
-      display: none !important;
-    }
+        .mapButtons {
+            pointer-events: auto;
+        }
 
 
-    /* if we are on mobile */
-    @media screen and (max-width:400px) {
-      .container {
-        height: 200px;
-      }
+        .cesium-widget-credits {
+            display: none !important;
+        }
 
-      #player,
-      #map {
-        width: 100%;
-      }
 
-      #map {
-        margin-top: 30px;
-      }
+        /* if we are on mobile */
+        @media screen and (max-width: 400px) {
+            .container {
+                height: 200px;
+            }
 
-      .mapButtons {
-        display: none;
-      }
-    }
-  </style>
+            #player,
+            #map {
+                width: 100%;
+            }
+
+            #map {
+                margin-top: 30px;
+            }
+
+            .mapButtons {
+                display: none;
+            }
+        }
+    </style>
 </head>
 
 
+<body width="device-width">
 
-<body width = "device-width">
-
-  <div id="mainTitle">
+<div id="mainTitle">
     <p style="text-align: center; font-family: acuminBold; font-size:200%;">My test</p>
-  </div>
+</div>
 
 
-  <div class="container">
+<div class="container">
     <div id="player">
-      <div id="playerOverlay">
-        <p id="playerMessage">Message</p>
-        <div id="playerPoster">
-          <div id="playerTitleBackground">
-            <img id="playerTitleBackgroundImage" src="images/gradient.png" alt="Snow">
-            <div id="playerTitle">
-              <p id="title" style="font-size:200%; line-height: 0%;"></p>
-              <p id="subtitle" style="font-size:100%;"></p>
+        <div id="playerOverlay">
+            <p id="playerMessage">Message</p>
+            <div id="playerPoster">
+                <div id="playerTitleBackground">
+                    <img id="playerTitleBackgroundImage" src="images/gradient.png" alt="Snow">
+                    <div id="playerTitle">
+                        <p id="title" style="font-size:200%; line-height: 0%;"></p>
+                        <p id="subtitle" style="font-size:100%;"></p>
+                    </div>
+                    <img src="images/360_icon.png"
+                         style="width: 60px; height : 30px; top: 30px; left: 40px; position: absolute">
+
+                </div>
             </div>
-            <img src="images/360_icon.png"
-              style="width: 60px; height : 30px; top: 30px; left: 40px; position: absolute">
-
-          </div>
         </div>
-      </div>
     </div>
-
 
 
     <div id="map">
-      <div id="mapLoader">
-        <p style="position: relative; top: 50%; transform: translateY(-50%); text-align: center; font-family: acuminBold; font-size:100%">LOADING MAP</p>
-      </div>
-      <div id="mapOverlay">
-         <button class="mapButtons" onclick="getLabelsFromGeoDB()">TEST</button>
-        <div id="mapToolbar" class="mapButtons"
-          style="position: absolute; background-color: rgba(255, 255, 255, .15); width: 30px; height:200px; right: 10px; bottom: 10px;">
-          <img id="zoomIn" src="images/plus.svg" style="margin: 5px; opacity: 0.7">
-          <img id="zoomOut" src="images/minus.svg" style="margin: 5px; opacity: 0.7">
-          <img id="turnLeft" src="images/rotate.svg" style="margin: 5px; opacity: 0.7">
-          <img id="turnRight" src="images/rotate.svg" style="margin: 5px; opacity: 0.7; transform: rotate(180deg);">
-          <img id="turnUp" src="images/rotate.svg" style="margin: 5px; opacity: 0.7; transform: rotate(90deg);">
-          <img id="turnDown" src="images/rotate.svg" style="margin: 5px; opacity: 0.7; transform: rotate(-90deg);">
+        <div id="mapLoader">
+            <img src="images/mapLoadingSpinner.gif" alt="LOADING..." style="width:48px;height:48px; position: relative; top: 50%; transform: translateY(-50%); margin-left: auto;
+                margin-right: auto; display: block">
         </div>
-      </div>
+        <div id="mapOverlay">
+            <button class="mapButtons" onclick="getLabelsFromGeoDB()">TEST</button>
+            <div id="mapToolbar" class="mapButtons"
+                 style="position: absolute; background-color: rgba(255, 255, 255, .15); width: 30px; height:200px; right: 10px; bottom: 10px;">
+                <img id="zoomIn" src="images/plus.svg" style="margin: 5px; opacity: 0.7">
+                <img id="zoomOut" src="images/minus.svg" style="margin: 5px; opacity: 0.7">
+                <img id="turnLeft" src="images/rotate.svg" style="margin: 5px; opacity: 0.7">
+                <img id="turnRight" src="images/rotate.svg"
+                     style="margin: 5px; opacity: 0.7; transform: rotate(180deg);">
+                <img id="turnUp" src="images/rotate.svg" style="margin: 5px; opacity: 0.7; transform: rotate(90deg);">
+                <img id="turnDown" src="images/rotate.svg"
+                     style="margin: 5px; opacity: 0.7; transform: rotate(-90deg);">
+            </div>
+        </div>
     </div>
-  </div>
+</div>
 
-  <script src="src/gpx-parser.js"></script>
-  <script src="src/playerController.js"></script>
-  <script src="src/mapController.js"></script>
-  <script src="src/myScript.js"></script>
-  <script src="src/map/cameraController.js"></script>
-  <script src="src/map/labelsController.js"></script>
+<script src="src/gpx-parser.js"></script>
+<script src="src/playerController.js"></script>
+<script src="src/mapController.js"></script>
+<script src="src/myScript.js"></script>
+<script src="src/map/cameraController.js"></script>
+<script src="src/map/labelsController.js"></script>
 
-  <!-- <script>
+<!-- <script>
 document.getElementById("myBtn").addEventListener("click", displayDate);
 
 function displayDate() {
-  console.log(Date());
+console.log(Date());
 }
 </script> -->
 
