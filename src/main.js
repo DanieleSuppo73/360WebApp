@@ -298,8 +298,8 @@ var main = {
 };
 
 
-main.load("data/Venezia_LioPiccolo/main.xml");
-//main.load("data/Venezia_LidoPellestrina/main.xml");
+//main.load("data/Venezia_LioPiccolo/main.xml");
+main.load("data/Venezia_LidoPellestrina/main.xml");
 //main.load("data/Alessandria/main.xml");
 
 

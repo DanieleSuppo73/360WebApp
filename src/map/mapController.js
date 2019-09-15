@@ -1,10 +1,13 @@
 Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzZDU1NWMyOC00YjFkLTQ5OTUtODg5Yy0zZDRlNGI1NTg3ZjciLCJpZCI6MTUxNTgsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1NjcyNDQ4NjR9.WDQmliwvLOArHiI9n4ET2TBELHRsGofW1unvSsbuyR8';
 var terrainProvider = Cesium.createWorldTerrain();
 var viewer = new Cesium.Viewer('map', {
-    // imageryProvider: new Cesium.MapboxImageryProvider({
-    //     mapId: 'mapbox.satellite',
-    //     accessToken: 'pk.eyJ1IjoiZGFuaWVsZXN1cHBvIiwiYSI6ImNqb2owbHp2YjAwODYzcW8xaWdhcGp1ancifQ.JvNWYw_cL6rV7ymuEbeTCw'
-    // }),
+
+    /// get imagery from Mapbox
+    imageryProvider: new Cesium.MapboxImageryProvider({
+        mapId: 'mapbox.satellite',
+        accessToken: 'pk.eyJ1IjoiZGFuaWVsZXN1cHBvIiwiYSI6ImNqb2owbHp2YjAwODYzcW8xaWdhcGp1ancifQ.JvNWYw_cL6rV7ymuEbeTCw'
+    }),
+
     terrainProvider: terrainProvider,
     animation: false,
     baseLayerPicker: false,
@@ -31,7 +34,7 @@ scene.skyAtmosphere.saturationShift = -0.01;
 
 
 
-viewer.scene.globe.maximumScreenSpaceError = 1.1; /// default is 2
+//viewer.scene.globe.maximumScreenSpaceError = 1.02; /// default is 2
 
 
 var map={

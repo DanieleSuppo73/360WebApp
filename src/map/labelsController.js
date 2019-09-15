@@ -4,10 +4,11 @@ viewer.camera.changed.addEventListener(() => {
     mapLabels.isRequestCheck = true;
 
 });
+
 viewer.camera.moveEnd.addEventListener(() => {
     if (mapLabels.isRequestCheck){
         mapLabels.isRequestCheck = false;
-        console.log("------ MAP changed, try to load labels ------");
+        logger.log("------ map is changed, try to load labels");
         mapLabels.load();
     }
 });
@@ -27,17 +28,17 @@ const mapLabels = {
         /// we must wait for a reasonable range is detected before to load
         let cameraRange = cameraProperties.range;
         if (cameraRange !== undefined && cameraRange > 50000){
-            logger.log("attempt refused...");
+            logger.log("attempt to load cities is refused...");
             let waitForReasonableRange = setInterval(function (handle) {
                 if (cameraProperties.range <= 50000){
-                    logger.log("2nd attempt accepted!");
+                    logger.log("2nd attempt to load cities is accepted!");
                     clearInterval(waitForReasonableRange);
                     loader(cameraRange);
                 }
             }, 1000);
         }
         else {
-            logger.log("attempt accepted!");
+            logger.log("attempt to load cities is accepted");
             loader(cameraRange);
         }
 
@@ -51,11 +52,8 @@ const mapLabels = {
             let cartographic = Cesium.Cartographic.fromCartesian(getPointFromCamera());
             let longitude = Cesium.Math.toDegrees(cartographic.longitude).toFixed(2);
             let latitude = Cesium.Math.toDegrees(cartographic.latitude).toFixed(2);
-
-            logger.log("Position: " + latitude, longitude);
-
             let radius = cameraRange / 1500;
-            logger.log("radius: " + radius);
+            logger.log("looking for cities at " + latitude  + " - " + longitude + " around " + radius + " Km");
 
             /// load mayor cities
             let minPopulation = 50000;
@@ -71,7 +69,7 @@ const mapLabels = {
                     minDistance = 30000;
                     maxDistance = 40000;
                     getDataFromWebServer(function () {
-                        logger.log("end of request for this frame");
+                        logger.log("end of cities request");
                         mapLabels.resetServerAvailable();
                     })
                 }, mapLabels.serverRequestDelay);
@@ -81,18 +79,17 @@ const mapLabels = {
 
             /// actually get data from https://rapidapi.com/wirefreethought/api/geodb-cities/details
             function getDataFromWebServer(callback) {
-                var data = null;
-                var xhr = new XMLHttpRequest();
+                let data = null;
+                let xhr = new XMLHttpRequest();
                 xhr.withCredentials = true;
 
                 xhr.addEventListener("readystatechange", function () {
                     if (this.readyState === this.DONE) {
-                        var allObj = JSON.parse(this.responseText);
-                        var data = allObj.data;
+                        let allObj = JSON.parse(this.responseText);
+                        let data = allObj.data;
 
                         /// handle the error from webserver
                         if (data === undefined){
-                            // mapLabels.isLoading = false;
                             logger.error("error loading labels from webserver");
                             mapLabels.resetServerAvailable();
                             return;
@@ -102,7 +99,7 @@ const mapLabels = {
                         }
 
                         /// create labels of the cities
-                        for (i = 0; i < data.length; i++) {
+                        for (let i = 0; i < data.length; i++) {
                             let result = data[i];
                             if (result.type === "CITY"){
 
@@ -132,7 +129,7 @@ const mapLabels = {
                                     mapLabels.labels.push(result.city);
                                 }
                                 else{
-                                    console.log("refused city: " + result.city);
+                                    logger.log("refused city: " + result.city);
                                 }
                             }
                         }
