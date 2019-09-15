@@ -1,17 +1,17 @@
 <MAIN>
     <VIDEO_URL>video/Lio Piccolo_015a.mp4</VIDEO_URL>
-    <!-- <VIDEO_MARKERS_URL>data/Venezia_LidoPellestrina/markers.xml</VIDEO_MARKERS_URL> -->
+    <VIDEO_MARKERS_URL>data/Venezia_LioPiccolo/markers.xml</VIDEO_MARKERS_URL>
     <POSTER_IMAGE>data/Venezia_LioPiccolo/poster.jpg</POSTER_IMAGE>
     <TITLE>Il Lio Piccolo di Venezia</TITLE>
     <SUBTITLE>Un tour 360 sulle isole di Venezia</SUBTITLE>
     <LABELS_URL>data/Venezia_LidoPellestrina/labels.xml</LABELS_URL>
-    <GPX>
-        <GPX_URL>data/Venezia_LioPiccolo/20190723163223.gpx</GPX_URL>
-        <GPX_NAME>Lio Piccolo 1</GPX_NAME>
-    </GPX>
-    <GPX>
-        <GPX_URL>data/Venezia_LioPiccolo/20190723170357.gpx</GPX_URL>
-        <GPX_NAME>Lio Piccolo 2</GPX_NAME>
-    </GPX>
+<!--    <GPX>-->
+<!--        <GPX_URL>data/Venezia_LioPiccolo/20190723163223.gpx</GPX_URL>-->
+<!--        <GPX_NAME>Lio Piccolo 1</GPX_NAME>-->
+<!--    </GPX>-->
+<!--    <GPX>-->
+<!--        <GPX_URL>data/Venezia_LioPiccolo/20190723170357.gpx</GPX_URL>-->
+<!--        <GPX_NAME>Lio Piccolo 2</GPX_NAME>-->
+<!--    </GPX>-->
     
 </MAIN>
