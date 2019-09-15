@@ -3,7 +3,7 @@
 
 <head>
     <meta charset='utf-8'/>
-    <title>test</title>
+    <title>360 Video</title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no'/>
 
     <script src="https://cesiumjs.org/releases/1.61/Build/Cesium/Cesium.js"></script>
@@ -14,18 +14,20 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
-  <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+
 
     <style>
-        @font-face {
-            font-family: acuminBold;
-            src: url(Acumin-BdPro.otf);
-        }
+        /*@font-face {*/
+        /*    font-family: acuminBold;*/
+        /*    src: url(Acumin-BdPro.otf);*/
+        /*}*/
 
-        @font-face {
-            font-family: acuminRegular;
-            src: url(Acumin-RPro.otf);
-        }
+        /*@font-face {*/
+        /*    font-family: acuminRegular;*/
+        /*    src: url(Acumin-RPro.otf);*/
+        /*}*/
 
         body {
             margin: 5px;
@@ -40,6 +42,7 @@
             height: 400px;
             margin-left: auto;
             margin-right: auto;
+            margin-top: 100px;
         }
 
         #player {
@@ -84,7 +87,11 @@
             color: white;
             bottom: 10px;
             left: 40px;
-            font-family: acuminBold;
+            font-family: Roboto;
+        }
+
+        #title {
+            font-size: 200%;
         }
 
         #playerMessage {
@@ -95,6 +102,13 @@
             font-size: 200%;
             opacity: 0;
         }
+
+        #360icon{
+            width: 60px;
+            height : 30px;
+            top: 30px; left: 40px; position: absolute;
+        }
+
 
         #map {
             position: relative;
@@ -153,6 +167,20 @@
             .mapButtons {
                 display: none;
             }
+
+            #title {
+                font-size: 100%;
+            }
+
+            #subtitle {
+                font-size: 70%;
+            }
+
+            #360icon {
+                width: 30px;
+                height: 15px;
+                display: none;
+            }
         }
     </style>
 </head>
@@ -160,9 +188,9 @@
 
 <body width="device-width">
 
-<div id="mainTitle">
-    <p style="text-align: center; font-family: acuminBold; font-size:200%;">My test</p>
-</div>
+<!--<div id="mainTitle">-->
+<!--    <p style="text-align: center; font-family: acuminBold; font-size:200%;">My test</p>-->
+<!--</div>-->
 
 
 <div class="container">
@@ -173,11 +201,11 @@
                 <div id="playerTitleBackground">
                     <img id="playerTitleBackgroundImage" src="images/gradient.png" alt="Snow">
                     <div id="playerTitle">
-                        <p id="title" style="font-size:200%; line-height: 0%;"></p>
-                        <p id="subtitle" style="font-size:100%;"></p>
+                        <p id="title" style="line-height: 0%; font-weight: 700;"></p>
+                        <p id="subtitle" style="font-weight: 400;"></p>
                     </div>
-                    <img src="images/360_icon.png"
-                         style="width: 60px; height : 30px; top: 30px; left: 40px; position: absolute">
+                    <img id="360icon" src="images/360_icon.png"
+                         style="top: 30px; left: 40px; position: absolute">
 
                 </div>
             </div>
@@ -191,7 +219,7 @@
                 margin-right: auto; display: block">
         </div>
         <div id="mapOverlay">
-            <button class="mapButtons" onclick="getLabelsFromGeoDB()">TEST</button>
+            <!--            <button class="mapButtons" onclick="getLabelsFromGeoDB()">TEST</button>-->
             <div id="mapToolbar" class="mapButtons"
                  style="position: absolute; background-color: rgba(255, 255, 255, .15); width: 30px; height:200px; right: 10px; bottom: 10px;">
                 <img id="zoomIn" src="images/plus.svg" style="margin: 5px; opacity: 0.7">
@@ -207,11 +235,11 @@
     </div>
 </div>
 
-<script src="src/gpx-parser.js"></script>
-<script src="src/playerController.js"></script>
-<script src="src/mapController.js"></script>
-<script src="src/myScript.js"></script>
-<script src="src/map/cameraController.js"></script>
+<script src="src/player/playerController.js"></script>
+<script src="src/map/gpx-parser.js"></script>
+<script src="src/map/mapController.js"></script>
+<script src="src/main.js"></script>
+<script src="src/map/navigation.js"></script>
 <script src="src/map/labelsController.js"></script>
 
 <!-- <script>

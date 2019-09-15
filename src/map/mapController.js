@@ -31,8 +31,13 @@ scene.skyAtmosphere.saturationShift = -0.01;
 
 
 
-viewer.scene.globe.maximumScreenSpaceError = 1.2; /// default is 2
+viewer.scene.globe.maximumScreenSpaceError = 1.1; /// default is 2
 
+
+var map={
+    isReady : false,
+
+};
 
 var mapReady = false;
 viewer.scene.globe.tileLoadProgressEvent.addEventListener((value) => {

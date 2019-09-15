@@ -13,6 +13,7 @@ viewer.camera.moveEnd.addEventListener(() => {
 });
 
 
+
 // function checkLabelsVisibility () {
 //     console.log("check visibility");
 //     let oldPitch = viewer.camera.pitch;

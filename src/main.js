@@ -298,8 +298,8 @@ var main = {
 };
 
 
-//main.load("data/Venezia_LioPiccolo/main.xml");
-main.load("data/Venezia_LidoPellestrina/main.xml");
+main.load("data/Venezia_LioPiccolo/main.xml");
+//main.load("data/Venezia_LidoPellestrina/main.xml");
 //main.load("data/Alessandria/main.xml");
 
 
@@ -425,86 +425,50 @@ function DisplayPlayerMessage(value) {
 }
 
 
-/////////////////////////////////////// TEST ///////////////////////////////////
-
-
-function getFromGeoData() {
-    const apiKey = "IPCPVGSTTYKHDE5CALAYWKH72VYPFCQO";
-    const format = "json";
-    const lat = 37.3861;
-    const lng = -122.084;
-
-    const url = "https://api.geodatasource.com/cities?key=IPCPVGSTTYKHDE5CALAYWKH72VYPFCQO&format=json&lat=45.416233&lng=12.370511";
-    loadDoc(url, function (data) {
-        let text = data.responseText;
-
-
-        var allObj = JSON.parse(text);
-
-
-        for (i = 0; i < allObj.length; i++) {
-
-            var obj = allObj[i];
-
-            viewer.entities.add({
-                position: Cesium.Cartesian3.fromDegrees(obj.longitude, obj.latitude),
-                billboard: {
-                    image: 'images/pin_icon.svg',
-                    width: 10,
-                    height: 10,
-                    verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-                    heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
-                }
-            });
-
-
-        }
-    });
-}
 
 
 /////////////////////////////////////// TEST ///////////////////////////////////
-var lng1 = 12.309487;
-var lat1 = 45.343125;
-
-var lng2 = 12.365823;
-var lat2 = 45.408781;
-
-
-var pos1 = Cesium.Cartesian3.fromDegrees(lng1, lat1);
-var pos2 = Cesium.Cartesian3.fromDegrees(lng2, lat2);
-
-
-var pinTest = viewer.entities.add({
-    position: pos1,
-    billboard: {
-        //image: 'images/pin_icon.png',
-        image: 'images/temp.svg',
-        width: 15,
-        height: 15,
-        //verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-        heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
-    }
-});
-
-
-//setInterval (dolerp, 1000);
-
-var iii = 0;
-
-function dolerp() {
-    // console.log("LERP: " + lerp (pos1.x, pos2.x, iii));
-    // console.log("LERP: " + lerp (pos1.y, pos2.y, iii));
-
-    iii += 0.05;
-
-    var pos3 = new Cesium.Cartesian3(lerp(pos1.x, pos2.x, iii), lerp(pos1.y, pos2.y, iii), lerp(pos1.z, pos2.z, iii));
-    console.log("LERP: " + pos3);
-
-
-    pinTest.position = pos3;
-}
-
-function lerp(start, end, amt) {
-    return (1 - amt) * start + amt * end
-}
+///////////// sync with video
+// var lng1 = 12.309487;
+// var lat1 = 45.343125;
+//
+// var lng2 = 12.365823;
+// var lat2 = 45.408781;
+//
+//
+// var pos1 = Cesium.Cartesian3.fromDegrees(lng1, lat1);
+// var pos2 = Cesium.Cartesian3.fromDegrees(lng2, lat2);
+//
+//
+// var pinTest = viewer.entities.add({
+//     position: pos1,
+//     billboard: {
+//         //image: 'images/pin_icon.png',
+//         image: 'images/temp.svg',
+//         width: 15,
+//         height: 15,
+//         //verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+//         heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
+//     }
+// });
+//
+//
+//
+//
+// var iii = 0;
+//
+// function dolerp() {
+//
+//
+//     iii += 0.05;
+//
+//     var pos3 = new Cesium.Cartesian3(lerp(pos1.x, pos2.x, iii), lerp(pos1.y, pos2.y, iii), lerp(pos1.z, pos2.z, iii));
+//     console.log("LERP: " + pos3);
+//
+//
+//     pinTest.position = pos3;
+// }
+//
+// function lerp(start, end, amt) {
+//     return (1 - amt) * start + amt * end
+// }
