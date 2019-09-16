@@ -74,7 +74,7 @@ function GPX() {
 /// with all the starting informations
 /// to setup everything
 ///////////////////////////////
-var main = {
+let main = {
     isLoaded: false,
     title: "",
     subtitle: "",
@@ -144,7 +144,7 @@ var main = {
             if (xmlDoc.getElementsByTagName("GPX").length !== 0) {
                 let i;
                 let ii = 0;
-                const x = xmlDoc.getElementsByTagName("GPX");
+                let x = xmlDoc.getElementsByTagName("GPX");
 
                 for (i = 0; i < x.length; i++) {
                     main.gpxList[i] = new GPX;
@@ -159,16 +159,16 @@ var main = {
                             console.log("terminato di caricare tutti i GPX!");
 
                             /// create an array with all coordinates from all GPX
-                            var allCoordinates = [];
+                            let allCoordinates = [];
                             for (y = 0; y < main.gpxList.length; y++) {
                                 allCoordinates.push.apply(allCoordinates, main.gpxList[y].coordinates);
                             }
 
                             /// create a bounding sphere and fly there
-                            var allPositions = Cesium.Cartesian3.fromDegreesArrayHeights(allCoordinates)
-                            var boundingSphere = new Cesium.BoundingSphere.fromPoints(allPositions);
+                            let allPositions = Cesium.Cartesian3.fromDegreesArrayHeights(allCoordinates);
+                            main.boundingSphere = new Cesium.BoundingSphere.fromPoints(allPositions);
 
-                            viewer.camera.flyToBoundingSphere(boundingSphere, {
+                            viewer.camera.flyToBoundingSphere(main.boundingSphere, {
                                 //offset: offset,
                                 duration: 0
                             });
@@ -238,13 +238,15 @@ var main = {
 
                         /// create the placeholder for the marker
                         /// if exist lng/lat for the marker
-                        if (longitude != 0 && latitude != 0) {
-                            var placeholder = viewer.entities.add({
+                        if (longitude !== 0 && latitude !== 0) {
+                            let placeholder = viewer.entities.add({
                                 position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
                                 billboard: {
                                     image: 'images/pin_icon.svg',
-                                    width: 49,
-                                    height: 64,
+                                    // width: 49,
+                                    // height: 64,
+                                    width: 16.3,
+                                    height: 21.3,
                                     verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
                                     heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
                                 }
@@ -252,7 +254,7 @@ var main = {
 
                             /// add billboardImage property method for the placeholder
                             placeholder.billboardImage = new BillboardImage(placeholder);
-                            placeholder.billboardImage.setOpacity(0.001);
+                            //placeholder.billboardImage.setOpacity(0.001);
 
                             main.placeholders.push(placeholder);
                         }
@@ -260,9 +262,9 @@ var main = {
                     }
 
                     /// when all markers are loaded, if there are no GPX
-                    /// create a bounging sphere around the markers
+                    /// create a bounding sphere around the markers
                     /// to fly the camera in position
-                    if (main.gpxList.length == 0) {
+                    if (main.gpxList.length === 0) {
 
                         /// create an array with all coordinates from all markers
                         var allCoordinates = [];
@@ -273,9 +275,9 @@ var main = {
                         insertHeightInCoordinates(allCoordinates, function () {
 
                             /// create a bounding sphere and fly there
-                            var allPositions = Cesium.Cartesian3.fromDegreesArrayHeights(allCoordinates)
-                            var boundingSphere = new Cesium.BoundingSphere.fromPoints(allPositions);
-                            viewer.camera.flyToBoundingSphere(boundingSphere, {
+                            let allPositions = Cesium.Cartesian3.fromDegreesArrayHeights(allCoordinates);
+                            main.boundingSphere = new Cesium.BoundingSphere.fromPoints(allPositions);
+                            viewer.camera.flyToBoundingSphere(main.boundingSphere, {
                                 //offset: offset,
                                 duration: 0
                             });
@@ -340,6 +342,8 @@ function BillboardImage(element) {
     const fadeTime = 10;
     let op;
     let isFading = false;
+    let minSize = 0.5;
+    let maxSize = 1;
 
     this.setOpacity = function (value) {
         op = value;
@@ -347,7 +351,6 @@ function BillboardImage(element) {
     };
 
     this.fadeIn = function () {
-        console.log("FADE IN " + this);
         isFading = true;
         if (timer != null) {
             clearInterval(timer);
@@ -380,6 +383,26 @@ function BillboardImage(element) {
             }
             if (isFading) {
                 element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, op);
+                op -= 0.025;
+            }
+        }, fadeTime);
+    };
+
+    this.resize = function (value) {
+        isFading = true;
+        if (timer != null) {
+            clearInterval(timer);
+        }
+        timer = setInterval(function () {
+            if (op <= 0.05) {
+                isFading = false;
+                clearInterval(timer);
+                timer = null;
+                element.billboard.width += 1;
+                //element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, 0.001);
+            }
+            if (isFading) {
+                //element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, op);
                 op -= 0.025;
             }
         }, fadeTime);
@@ -423,6 +446,88 @@ function DisplayPlayerMessage(value) {
     id.innerHTML = value;
 
 }
+
+viewer.camera.changed.addEventListener(() => {
+    mapLabels.isRequestCheck = true;
+
+});
+
+
+
+
+
+//////////////////////////////// TEST CLUSTER /////////////////////////////
+
+function testCluster(){
+    let options = {
+        camera : viewer.scene.camera,
+        canvas : viewer.scene.canvas
+    };
+
+    // console.log(viewer.entities._entities._array.length);
+    // // // let dataSourcePromise = viewer.dataSources.add(Cesium.KmlDataSource.load('../../../../Apps/SampleData/kml/facilities/facilities.kml', options));
+    // let dataSourcePromise = viewer.dataSources.add(viewer.entities._entities._array);
+    // dataSourcePromise.then(function(dataSource) {
+    //     let pixelRange = 15;
+    //     let minimumClusterSize = 3;
+    //     let enabled = true;
+    //
+    //     logger.log("AAAAAAAAAAAAAAAAAAAAAAAA");
+    //
+    //     dataSource.clustering.enabled = enabled;
+    //     dataSource.clustering.pixelRange = pixelRange;
+    //     dataSource.clustering.minimumClusterSize = minimumClusterSize;
+    // });
+
+
+
+
+console.log("CLUSTER");
+
+    var modelLayer = new Cesium.CustomDataSource();
+
+    modelLayer.entities.add({
+        position: Cesium.Cartesian3.fromDegrees(-75.1641667, -39.9522222),
+        label: {
+            text: 'PIPPO',
+            font: '13px Verdana',
+            // position: Cesium.Cartesian3.fromDegrees(-75.1641667 + lon, -39.9522222 + lat, 100000),
+            // verticalOrigin: Cesium.VerticalOrigin.TOP,
+            // eyeOffset: Cesium.Cartesian3(0, 0, -10000)
+        },
+    });
+
+    var pixelRange = 15;
+    var minimumClusterSize = 3;
+    var enabled = true;
+
+    modelLayer.clustering.enabled = enabled;
+    modelLayer.clustering.pixelRange = pixelRange;
+    modelLayer.clustering.minimumClusterSize = minimumClusterSize;
+
+
+/////////////////////////////////
+
+    // var dataSource = new Cesium.CustomDataSource('myData');
+    //
+    // var entity = dataSource.entities.add({
+    //     position : Cesium.Cartesian3.fromDegrees(1, 2, 0),
+    //     billboard : {
+    //         image : 'image.png'
+    //     }
+    // });
+    //
+    // viewer.dataSources.add(dataSource);
+}
+
+
+
+
+
+
+
+
+
 
 
 

@@ -141,11 +141,17 @@
 
         .mapButtons {
             position: absolute;
-            background-color: rgba(0, 0, 0, .75);
+            /*background-color: rgba(0, 0, 0, .75);*/
+            border-style: solid;
+            border-color:rgba(255,130,255,0.3);
+            -webkit-border-image: url(images/rounded_black.svg) round; /* Safari 3.1-5 */
+            -o-border-image: url(images/rounded_black.svg) round; /* Opera 11-12.1 */
+            border-image: url(images/rounded_black.svg) round;
+            border-image-slice: 18% fill;
             width: 25px; height:145px;
             right: 10px; bottom: 10px;
             pointer-events: auto;
-            padding: 3px;
+            padding: 1px;
         }
 
         .mapNavigation {
@@ -229,7 +235,7 @@
                 margin-right: auto; display: block">
         </div>
         <div id="mapOverlay">
-            <!--            <button class="mapButtons" onclick="getLabelsFromGeoDB()">TEST</button>-->
+
             <div id="mapToolbar" class="mapButtons">
                 <img class="mapNavigation" id="zoomIn" src="images/plus.svg">
                 <img class="mapNavigation" id="zoomOut" src="images/minus.svg">
@@ -241,6 +247,7 @@
         </div>
     </div>
 </div>
+<button onclick="testCluster()">TEST</button>
 
 <script src="src/player/playerController.js"></script>
 <script src="src/map/gpx-parser.js"></script>

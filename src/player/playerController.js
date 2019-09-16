@@ -30,6 +30,10 @@ function loadPlayer(videoUrl, posterImg) {
     Player.listenTo(Player, Clappr.Events.PLAYER_SEEK, OnPlayerSeek);
     Player.listenTo(Player, Clappr.Events.PLAYER_SEEK, resetCounter);
 
+    Player.listenTo(Player, Clappr.Events.PLAYER_ENDED, function () {
+      logger.log("Video ended");
+      viewer.camera.flyToBoundingSphere(main.boundingSphere);
+    });
   }
 
   /// else, if we are loading a new video
