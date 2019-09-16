@@ -185,6 +185,7 @@ let main = {
 
             /// load the markers
             main.markers = [];
+            var markersLayer = new Cesium.CustomDataSource();
             if (xmlDoc.getElementsByTagName("VIDEO_MARKERS_URL").length != 0) {
                 main.videoMarkersUrl = xmlDoc.getElementsByTagName("VIDEO_MARKERS_URL")[0].childNodes[0].nodeValue;
 
@@ -239,10 +240,10 @@ let main = {
                         /// create the placeholder for the marker
                         /// if exist lng/lat for the marker
                         if (longitude !== 0 && latitude !== 0) {
-                            let placeholder = viewer.entities.add({
+                            let placeholder = markersLayer.entities.add({
                                 position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
                                 billboard: {
-                                    image: 'images/pin_icon.svg',
+                                    image: 'images/pin_small_icon.svg',
                                     // width: 49,
                                     // height: 64,
                                     width: 16.3,
@@ -260,6 +261,28 @@ let main = {
                         }
 
                     }
+
+                    /// cluster the markers
+                    viewer.dataSources.add(markersLayer);
+                    markersLayer.clustering.enabled = true;
+                    markersLayer.clustering.pixelRange = 10;
+                    markersLayer.clustering.minimumClusterSize = 2;
+                    markersLayer.clustering.clusterLabels = false;
+
+                    markersLayer.clustering.clusterEvent.addEventListener(function(clusteredEntities, cluster) {
+
+                        cluster.label.show = false;
+                        cluster.billboard.show = true;
+                        cluster.billboard.id = cluster.label.id;
+                        cluster.billboard.verticalOrigin = Cesium.VerticalOrigin.BOTTOM;
+                        cluster.billboard.width = 16.3;
+                        cluster.billboard.height = 21.3;
+                        cluster.billboard.image = 'images/pin_small_icon.svg';
+
+                        // if (clusteredEntities.length >= 3) {
+                        //     cluster.billboard.image = 'images/pin_icon.svg';
+                        // }
+                    });
 
                     /// when all markers are loaded, if there are no GPX
                     /// create a bounding sphere around the markers
