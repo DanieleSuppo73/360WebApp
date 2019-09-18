@@ -2,7 +2,6 @@
 
 viewer.camera.changed.addEventListener(() => {
     mapLabels.isRequestCheck = true;
-
 });
 
 viewer.camera.moveEnd.addEventListener(() => {
@@ -44,15 +43,22 @@ const mapLabels = {
 
         /// load cities
         function loader(cameraRange) {
-            //mapLabels.isLoading = true;
+            let radius = cameraRange / 1500;
+            /// if the radius is < 1km don't request
+            if (radius <= 1){
+                logger.log("camera too near to terrain, don't request cities");
+                mapLabels.isServerAvailable = true;
+                return;
+            }
+
             mapLabels.isServerAvailable = false;
-            logger.log("Loading cities...");
 
             /// get the coordinates in the center of the window
             let cartographic = Cesium.Cartographic.fromCartesian(getPointFromCamera());
             let longitude = Cesium.Math.toDegrees(cartographic.longitude).toFixed(2);
             let latitude = Cesium.Math.toDegrees(cartographic.latitude).toFixed(2);
-            let radius = cameraRange / 1500;
+
+
             logger.log("looking for cities at " + latitude  + " - " + longitude + " around " + radius + " Km");
 
             /// load mayor cities

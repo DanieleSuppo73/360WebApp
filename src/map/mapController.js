@@ -34,7 +34,7 @@ scene.skyAtmosphere.saturationShift = -0.01;
 
 
 
-//viewer.scene.globe.maximumScreenSpaceError = 1.02; /// default is 2
+viewer.scene.globe.maximumScreenSpaceError = 1.5; /// default is 2
 
 
 var map={
