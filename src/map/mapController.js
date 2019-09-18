@@ -1,6 +1,6 @@
 Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzZDU1NWMyOC00YjFkLTQ5OTUtODg5Yy0zZDRlNGI1NTg3ZjciLCJpZCI6MTUxNTgsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1NjcyNDQ4NjR9.WDQmliwvLOArHiI9n4ET2TBELHRsGofW1unvSsbuyR8';
-var terrainProvider = Cesium.createWorldTerrain();
-var viewer = new Cesium.Viewer('map', {
+const terrainProvider = Cesium.createWorldTerrain();
+const viewer = new Cesium.Viewer('map', {
 
     /// get imagery from Mapbox
     imageryProvider: new Cesium.MapboxImageryProvider({
@@ -42,6 +42,8 @@ var map={
 
 };
 
+
+
 var mapReady = false;
 viewer.scene.globe.tileLoadProgressEvent.addEventListener((value) => {
     if (! mapReady && value === 0){
@@ -54,14 +56,14 @@ viewer.scene.globe.tileLoadProgressEvent.addEventListener((value) => {
 
 var mapController = {
     flyToElement: function (element) {
-        heading = viewer.scene.camera.heading;
-        pitch = viewer.scene.camera.pitch;
-        range = cameraProperties.range;
+        let heading = viewer.scene.camera.heading;
+        let pitch = viewer.scene.camera.pitch;
+        let range = cameraProperties.range;
         viewer.flyTo(element, {
             offset: new Cesium.HeadingPitchRange(heading, pitch, range)
         });
     }
-}
+};
 
 
 

@@ -1,6 +1,8 @@
 var markersLayer;
 
 
+
+
 /// get the Parameters from iframe declaration in html page
 function getParameterFromIframe(parameter)
 {
@@ -369,7 +371,12 @@ let main = {
                             main.boundingSphere = new Cesium.BoundingSphere.fromPoints(allPositions);
                             viewer.camera.flyToBoundingSphere(main.boundingSphere, {
                                 //offset: offset,
-                                duration: 0
+                                duration: 0,
+                                complete: () => {console.log("--------------FLY COMPLETE ----------------")
+                                    ClusterOFF();
+                                    ClusterON();
+
+                                }
                             });
 
                             //$("#mapLoader").fadeOut("slow");
@@ -388,10 +395,11 @@ let main = {
 
 
 
-            ClusterOFF();
-            ClusterON();
+
         });
     },
+    onFirstFlyComplete: () => { }
+
 };
 
 
