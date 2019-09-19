@@ -5,27 +5,17 @@ const video = {
         isPaused: false,
         isSeeking: false,
         time: null,
-        //started: false,
-        //onSeek: null,
 
-
-        aInternal: 10,
         aListener: function (val) {
         },
 
-        set started(val) {
-            this.aInternal = val;
-            this.aListener(val);
+        set isStarted(val) {
+            video.aListener(val);
         },
 
-        get a() {
-            return this.aInternal;
+        onFirstPlay: function (listener) {
+            video.aListener = listener;
         },
-
-        registerListener: function (listener) {
-            this.aListener = listener;
-        },
-
 
         load: (container, url, poster = null) => {
 
@@ -60,10 +50,8 @@ const video = {
 
         },
 
-
         onPlay: () => {
-
-            video.a = 100;
+            video.isStarted = true;
 
             /// if we where seeking wait a bit before to set
             /// playerPlaying = true, because it does not get immediately
@@ -121,9 +109,6 @@ const video = {
                 video.dispatchEvent(event);
             },
 
-        listener: function (val) {
-
-        }
     }
 ;
 
@@ -133,6 +118,8 @@ video.load("#player", "video/Lido%20-%20Pellestrina_026.mp4", "data/Venezia_Lido
 
 /////////////////////////////
 
-video.registerListener(function(val) {
+video.onFirstPlay(function (val) {
     alert("Someone changed the value of x.a to " + val);
 });
+
+
