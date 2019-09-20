@@ -37,7 +37,7 @@ scene.skyAtmosphere.saturationShift = -0.01;
 viewer.scene.globe.maximumScreenSpaceError = 1.5; /// default is 2
 
 
-var map={
+const map = {
     isReady : false,
 
 };
@@ -45,10 +45,16 @@ var map={
 
 
 var mapReady = false;
+
 viewer.scene.globe.tileLoadProgressEvent.addEventListener((value) => {
-    if (! mapReady && value === 0){
-        mapReady = true;
-        $("#mapLoader").fadeOut("slow");
+    if (!map.isReady && value === 0){
+
+        /// wait 1 second more
+        setTimeout(function () {
+            map.isReady = true;
+            $("#mapLoader").fadeOut("slow");
+        }, 1000);
+
     }
 });
 

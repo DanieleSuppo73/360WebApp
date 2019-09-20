@@ -36,6 +36,7 @@ const videoPlayer = {
 
         /// FINISHED
         set isFinished(val) {
+            videoPlayer._isStarted = false;
             videoPlayer.endListener(val);
         },
 

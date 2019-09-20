@@ -121,11 +121,17 @@ let main = {
                 playerPoster.style.opacity = 0;
                 playerPoster.style.transition = "opacity " + 1 + "s";
                 playerPoster.style.WebkitTransition = "opacity " + 1 + "s";
+
+                /// fade out placeholders on first play
+                fadeOutAllPlaceholdersAtStart();
             });
 
             videoPlayer.onEnd(function (e) {
                 /// fly back to boundingSphere
-                viewer.camera.flyToBoundingSphere(main.boundingSphere);
+                viewer.camera.flyToBoundingSphere(main.boundingSphere)
+
+                /// fade in placeholders at end of video
+                fadeInAllPlaceholdersAtEnd();
             });
 
 
@@ -213,8 +219,8 @@ let main = {
             /// load the markers
             main.markers = [];
             /// create customDataSource for placeholdersMap
-            let markersLayer = new Cesium.CustomDataSource();
-            if (xmlDoc.getElementsByTagName("VIDEO_MARKERS_URL").length != 0) {
+            // let markersLayer = new Cesium.CustomDataSource();
+            if (xmlDoc.getElementsByTagName("VIDEO_MARKERS_URL").length !== 0) {
                 main.videoMarkersUrl = xmlDoc.getElementsByTagName("VIDEO_MARKERS_URL")[0].childNodes[0].nodeValue;
 
                 loadDoc(main.videoMarkersUrl, function (xml) {
@@ -227,29 +233,29 @@ let main = {
                         var title = "";
                         var longitude = 0;
                         var latitude = 0;
-                        if (x[i].getElementsByTagName("SEQUENCE_TIMECODE").length != 0) {
-                            if (x[i].getElementsByTagName("SEQUENCE_TIMECODE")[0].childNodes.length != 0) {
+                        if (x[i].getElementsByTagName("SEQUENCE_TIMECODE").length !== 0) {
+                            if (x[i].getElementsByTagName("SEQUENCE_TIMECODE")[0].childNodes.length !== 0) {
                                 sequenceTimeCode = x[i].getElementsByTagName("SEQUENCE_TIMECODE")[0].childNodes[0].nodeValue;
                             }
                         }
-                        if (x[i].getElementsByTagName("VIDEO_TIMECODE").length != 0) {
-                            if (x[i].getElementsByTagName("VIDEO_TIMECODE")[0].childNodes.length != 0) {
+                        if (x[i].getElementsByTagName("VIDEO_TIMECODE").length !== 0) {
+                            if (x[i].getElementsByTagName("VIDEO_TIMECODE")[0].childNodes.length !== 0) {
                                 videoTimeCode = x[i].getElementsByTagName("VIDEO_TIMECODE")[0].childNodes[0].nodeValue;
                                 videoTimeCode = convertTimeCodeToSeconds(videoTimeCode, 25);
                             }
                         }
-                        if (x[i].getElementsByTagName("TITLE").length != 0) {
-                            if (x[i].getElementsByTagName("TITLE")[0].childNodes.length != 0) {
+                        if (x[i].getElementsByTagName("TITLE").length !== 0) {
+                            if (x[i].getElementsByTagName("TITLE")[0].childNodes.length !== 0) {
                                 title = x[i].getElementsByTagName("TITLE")[0].childNodes[0].nodeValue;
                             }
                         }
-                        if (x[i].getElementsByTagName("LONGITUDE").length != 0) {
-                            if (x[i].getElementsByTagName("LONGITUDE")[0].childNodes.length != 0) {
+                        if (x[i].getElementsByTagName("LONGITUDE").length !== 0) {
+                            if (x[i].getElementsByTagName("LONGITUDE")[0].childNodes.length !== 0) {
                                 longitude = x[i].getElementsByTagName("LONGITUDE")[0].childNodes[0].nodeValue;
                             }
                         }
-                        if (x[i].getElementsByTagName("LATITUDE").length != 0) {
-                            if (x[i].getElementsByTagName("LATITUDE")[0].childNodes.length != 0) {
+                        if (x[i].getElementsByTagName("LATITUDE").length !== 0) {
+                            if (x[i].getElementsByTagName("LATITUDE")[0].childNodes.length !== 0) {
                                 latitude = x[i].getElementsByTagName("LATITUDE")[0].childNodes[0].nodeValue;
                             }
                         }
@@ -270,7 +276,7 @@ let main = {
                         if (longitude !== 0 && latitude !== 0) {
 
                             /// placeholderMap
-                            let placeholder = markersLayer.entities.add({
+                            let placeholder = viewer.entities.add({
                                 position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
                                 billboard: {
                                     image: 'images/pin_small_icon.svg',
@@ -306,11 +312,10 @@ let main = {
 
                             main.placeholdersPlay.push(placeholder);
                         }
-
                     }
 
                     /// cluster the markers
-                    viewer.dataSources.add(markersLayer);
+                    //viewer.dataSources.add(markersLayer);
 
                     // markersLayer.clustering.enabled = true;
                     // markersLayer.clustering.pixelRange = 10;
@@ -338,33 +343,33 @@ let main = {
                     // });
 
 
-                    var removeListener;
+                    // var removeListener;
 
 
-                    function customStyle() {
-                        if (Cesium.defined(removeListener)) {
-                            removeListener();
-                            removeListener = undefined;
-                        } else {
-                            removeListener = markersLayer.clustering.clusterEvent.addEventListener(function(clusteredEntities, cluster) {
-                                console.log("EEEEEEEEEEEEEEEEEEEEEEEEE");
-                                cluster.label.show = false;
-                                cluster.billboard.show = true;
-                                cluster.billboard.id = cluster.label.id;
-                                cluster.billboard.verticalOrigin = Cesium.VerticalOrigin.BOTTOM;
-                                cluster.billboard.heightReference = Cesium.HeightReference.RELATIVE_TO_GROUND;
-                                cluster.billboard.width = 16.3;
-                                cluster.billboard.height = 21.3;
-                                cluster.billboard.image = 'images/pin_small_icon.svg';
-                                cluster.billboard.color = new Cesium.Color(0.2, 0.5, 0.7, 0.5);
-                            });
-                        }
-
-                        // force a re-cluster with the new styling
-                        var pixelRange = markersLayer.clustering.pixelRange;
-                        markersLayer.clustering.pixelRange = 0;
-                        markersLayer.clustering.pixelRange = pixelRange;
-                    }
+                    // function customStyle() {
+                    //     if (Cesium.defined(removeListener)) {
+                    //         removeListener();
+                    //         removeListener = undefined;
+                    //     } else {
+                    //         removeListener = markersLayer.clustering.clusterEvent.addEventListener(function(clusteredEntities, cluster) {
+                    //             console.log("EEEEEEEEEEEEEEEEEEEEEEEEE");
+                    //             cluster.label.show = false;
+                    //             cluster.billboard.show = true;
+                    //             cluster.billboard.id = cluster.label.id;
+                    //             cluster.billboard.verticalOrigin = Cesium.VerticalOrigin.BOTTOM;
+                    //             cluster.billboard.heightReference = Cesium.HeightReference.RELATIVE_TO_GROUND;
+                    //             cluster.billboard.width = 16.3;
+                    //             cluster.billboard.height = 21.3;
+                    //             cluster.billboard.image = 'images/pin_small_icon.svg';
+                    //             cluster.billboard.color = new Cesium.Color(0.2, 0.5, 0.7, 0.5);
+                    //         });
+                    //     }
+                    //
+                    //     // force a re-cluster with the new styling
+                    //     var pixelRange = markersLayer.clustering.pixelRange;
+                    //     markersLayer.clustering.pixelRange = 0;
+                    //     markersLayer.clustering.pixelRange = pixelRange;
+                    // }
 
 
                     // start with custom style
@@ -378,8 +383,8 @@ let main = {
                     if (main.gpxList.length === 0) {
 
                         /// create an array with all coordinates from all markers
-                        var allCoordinates = [];
-                        for (y = 0; y < main.markers.length; y++) {
+                        let allCoordinates = [];
+                        for (let y = 0; y < main.markers.length; y++) {
                             allCoordinates.push(main.markers[y].longitude, main.markers[y].latitude);
                         }
 
@@ -391,41 +396,18 @@ let main = {
                             viewer.camera.flyToBoundingSphere(main.boundingSphere, {
                                 //offset: offset,
                                 duration: 0,
-                                complete: () => {
-                                    console.log("--------------FLY COMPLETE ----------------");
-                                    // ClusterOFF();
-                                    // ClusterON();
-                                    markersLayer.clustering.enabled = true;
-                                    markersLayer.clustering.pixelRange = 10;
-                                    markersLayer.clustering.minimumClusterSize = 2;
-                                    markersLayer.clustering.clusterLabels = false;
-
-                                    // start with custom style
-                                    customStyle();
-                                }
                             });
 
-                            //$("#mapLoader").fadeOut("slow");
                             main.isLoaded = true;
                         });
                     }
                 });
-
-
                 /// start to check for markers during video playback
-                setInterval(checkForMarker, 500);
+                startToCheckForMarker();
             }
-
-
             if (callback != null) callback();
-
-
-
-
         });
     },
-    onFirstFlyComplete: () => { }
-
 };
 
 
@@ -440,16 +422,29 @@ main.load(uri);
 ////////////////////////////
 var markerIndex = -1;
 
-// Player.listenTo(Player, Clappr.Events.PLAYER_SEEK, resetCounter);
 
-function resetCounter() {
-    markerIndex = 0;
+function fadeOutAllPlaceholdersAtStart(){
+    /// fade out all placeholders except the 1st
+    for (let i=1; i<main.placeholdersMap.length; i++){
+        main.placeholdersMap[i].billboardImage.fadeOut();
+    }
+}
+
+function fadeInAllPlaceholdersAtEnd(){
+    for (let i=0; i<main.placeholdersMap.length; i++){
+        main.placeholdersMap[i].billboardImage.fadeIn(0.5);
+    }
+}
+
+/// start to check for markers during video playback
+function startToCheckForMarker(){
+    setInterval(checkForMarker, 500);
 }
 
 function checkForMarker() {
     if (main.markers.length < 2 || !videoPlayer.isPlaying) return;
 
-    for (i = 0; i < main.markers.length; i++) {
+    for (let i = 0; i < main.markers.length; i++) {
 
         if (i < main.markers.length - 1 && videoPlayer.time >= main.markers[i].videoTime &&
             videoPlayer.time < main.markers[i + 1].videoTime && markerIndex !== i) {
@@ -478,17 +473,17 @@ function BillboardImage(element) {
         element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, op);
     };
 
-    this.fadeIn = function () {
+    this.fadeIn = function (value = 1) {
         isFading = true;
         if (timer != null) {
             clearInterval(timer);
         }
         timer = setInterval(function () {
-            if (op >= 0.95) {
+            if (op >= value - 0.05) {
                 isFading = false;
                 clearInterval(timer);
                 timer = null;
-                element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, 1);
+                element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, value);
             }
             if (isFading) {
                 element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, op);
@@ -497,17 +492,17 @@ function BillboardImage(element) {
         }, fadeTime);
     };
 
-    this.fadeOut = function () {
+    this.fadeOut = function (value = 0) {
         isFading = true;
         if (timer != null) {
             clearInterval(timer);
         }
         timer = setInterval(function () {
-            if (op <= 0.05) {
+            if (op <= value + 0.05) {
                 isFading = false;
                 clearInterval(timer);
                 timer = null;
-                element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, 0.001);
+                element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, value + 0.001);
             }
             if (isFading) {
                 element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, op);
@@ -528,17 +523,17 @@ function onMarkerReached(index) {
     if (index === oldMarkerIndex) return;
 
     /// debug
-    DisplayPlayerMessage("marker:" + index + " - " + main.markers[index].title);
+    // DisplayPlayerMessage("marker:" + index + " - " + main.markers[index].title);
     logger.log("linkato su marker : " + index + " - " + main.markers[index].title);
 
     /// fade in-out old placeholders
     if (oldMarkerIndex != null) {
-        main.placeholdersPlay[oldMarkerIndex].billboardImage.fadeOut();
+        main.placeholdersMap[oldMarkerIndex].billboardImage.fadeOut();
         logger.log("spengo " + oldMarkerIndex);
     }
 
     /// fade-in new placeholder
-    main.placeholdersPlay[index].billboardImage.fadeIn();
+    main.placeholdersMap[index].billboardImage.fadeIn();
 
     //NON FUNZIONA!
 
@@ -570,16 +565,6 @@ function DisplayPlayerMessage(value) {
 
 
 
-
-//////////////////////////////////////////////
-
-function ClusterON() {
-    markersLayer.clustering.enabled = true;
-}
-
-function ClusterOFF() {
-    markersLayer.clustering.enabled = false;
-}
 
 
 /////////////////////////////////////// TEST ///////////////////////////////////

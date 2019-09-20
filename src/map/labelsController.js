@@ -23,27 +23,24 @@ const mapLabels = {
             return;
         }
 
-        /// since when the map is loading the 1st time the camera range is wrong,
-        /// we must wait for a reasonable range is detected before to load
-        let cameraRange = cameraProperties.range;
-        if (cameraRange !== undefined && cameraRange > 50000){
+        if (!map.isReady){
             logger.log("attempt to load cities is refused...");
-            let waitForReasonableRange = setInterval(function (handle) {
-                if (cameraProperties.range <= 50000){
+            let waitForMap = setInterval(function (handle) {
+                if (map.isReady){
                     logger.log("2nd attempt to load cities is accepted!");
-                    clearInterval(waitForReasonableRange);
-                    loader(cameraRange);
+                    clearInterval(waitForMap);
+                    loader();
                 }
             }, 1000);
         }
         else {
             logger.log("attempt to load cities is accepted");
-            loader(cameraRange);
+            loader();
         }
 
         /// load cities
-        function loader(cameraRange) {
-            let radius = cameraRange / 1500;
+        function loader() {
+            let radius = cameraProperties.range / 1500;
             /// if the radius is < 1km don't request
             if (radius <= 1){
                 logger.log("camera too near to terrain, don't request cities");
