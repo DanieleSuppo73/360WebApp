@@ -1,8 +1,14 @@
 const videoPlayer = {
         player: null,
-        markers: [],
         isPlaying: false,
-        time: null,
+        get time (){
+            if (videoPlayer.player != null){
+                return videoPlayer.player.getCurrentTime();
+            }
+            else{
+                console.log("Error - try to get time from player not defined")
+            }
+        },
 
         /// STARTED
         _isStarted: false,
@@ -51,7 +57,6 @@ const videoPlayer = {
             videoPlayer.endListener = listener;
         },
 
-
         firstPlayListener: function (val) {
         },
         pauseListener: function (va) {
@@ -90,15 +95,11 @@ const videoPlayer = {
 
                 videoPlayer.isStarted = true;
 
-                /// if we where seeking wait a bit before to set
-                /// playerPlaying = true, because it does not get immediately
-                /// the time of the video
                 if (videoPlayer.isSeeking) {
                     videoPlayer.isSeeking = false;
-                    setTimeout(function () {
-                        videoPlayer.isPlaying = true;
-                        logger.log("video is playing again from seek");
-                    }, 500);
+                    videoPlayer.isPlaying = true;
+                    logger.log("video is playing again from seek");
+
                 } else {
                     if (videoPlayer.isPaused) {
                         videoPlayer.isPaused = false;
@@ -107,27 +108,8 @@ const videoPlayer = {
                     } else {
                         videoPlayer.isPlaying = true;
                         logger.log("video started");
-
-                        /// HERE WE HAVE TO CALL A FUNCTION FOR THE START OF THE VIDEO!
-                        ///
-                        ///
-
-                        /// get playing time
-                        setInterval(function () {
-                            if (videoPlayer.isPlaying && videoPlayer.player !== null) {
-                                videoPlayer.time = videoPlayer.player.getCurrentTime();
-                                console.log(videoPlayer.time);
-                            }
-                        }, 200);
-
-
-                        let id = document.getElementById("playerPoster");
-                        id.style.opacity = 0;
-                        id.style.transition = "opacity " + 1 + "s";
-                        id.style.WebkitTransition = "opacity " + 1 + "s";
                     }
                 }
-
             });
 
 
@@ -162,24 +144,30 @@ const videoPlayer = {
 
 
 
-videoPlayer.load("#player", "video/Lido%20-%20Pellestrina_026.mp4", "data/Venezia_LidoPellestrina/poster.jpg");
-
-
-videoPlayer.onFirstPlay(function (val) {
-    logger.log("video listener - onFirstPlay");
-});
-
-videoPlayer.onPause(function (val) {
-    logger.log("video listener - onPause");
-});
-
-videoPlayer.onSeek(function (val) {
-    logger.log("video listener - onSeek");
-});
-
-videoPlayer.onEnd(function (val) {
-    logger.log("video listener - onEnd");
-});
+// videoPlayer.load("#player", "video/Lido%20-%20Pellestrina_026.mp4", "data/Venezia_LidoPellestrina/poster.jpg");
+//
+//
+// videoPlayer.onFirstPlay(function (val) {
+//     logger.log("video listener - onFirstPlay");
+// });
+//
+// videoPlayer.onPause(function (val) {
+//     logger.log("video listener - onPause");
+// });
+//
+// videoPlayer.onSeek(function (val) {
+//     logger.log("video listener - onSeek");
+// });
+//
+// videoPlayer.onEnd(function (val) {
+//     logger.log("video listener - onEnd");
+// });
+//
+// setInterval(function () {
+//     if (videoPlayer.isPlaying) {
+//         console.log(videoPlayer.time);
+//     }
+// }, 200);
 
 
 

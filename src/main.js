@@ -96,6 +96,7 @@ let main = {
     placeholdersMap: [],
     placeholdersPlay: [],
     labels: [],
+    boundingSphere : new Cesium.BoundingSphere(),
     load: function (url, callback = null) {
         loadDoc(url, function (xml) {
             let xmlDoc = xml.responseXML;
@@ -106,11 +107,26 @@ let main = {
             main.posterImage = xmlDoc.getElementsByTagName("POSTER_IMAGE")[0].childNodes[0].nodeValue;
 
             /// load the video
-            loadPlayer(main.videoUrl, main.posterImage);
+            // loadPlayer(main.videoUrl, main.posterImage);
+            videoPlayer.load("#player", main.videoUrl, main.posterImage);
 
             /// set the title in the poster image
             document.getElementById("title").innerHTML = main.title;
             document.getElementById("subtitle").innerHTML = main.subtitle;
+
+
+            videoPlayer.onFirstPlay(function (e) {
+                /// fade out #playerPoster on first play
+                let playerPoster = document.getElementById("playerPoster");
+                playerPoster.style.opacity = 0;
+                playerPoster.style.transition = "opacity " + 1 + "s";
+                playerPoster.style.WebkitTransition = "opacity " + 1 + "s";
+            });
+
+            videoPlayer.onEnd(function (e) {
+                /// fly back to boundingSphere
+                viewer.camera.flyToBoundingSphere(main.boundingSphere);
+            });
 
 
             // /// load map labels
@@ -197,7 +213,7 @@ let main = {
             /// load the markers
             main.markers = [];
             /// create customDataSource for placeholdersMap
-            markersLayer = new Cesium.CustomDataSource();
+            let markersLayer = new Cesium.CustomDataSource();
             if (xmlDoc.getElementsByTagName("VIDEO_MARKERS_URL").length != 0) {
                 main.videoMarkersUrl = xmlDoc.getElementsByTagName("VIDEO_MARKERS_URL")[0].childNodes[0].nodeValue;
 
@@ -296,10 +312,13 @@ let main = {
                     /// cluster the markers
                     viewer.dataSources.add(markersLayer);
 
-                    markersLayer.clustering.enabled = true;
-                    markersLayer.clustering.pixelRange = 10;
-                    markersLayer.clustering.minimumClusterSize = 2;
-                    markersLayer.clustering.clusterLabels = false;
+                    // markersLayer.clustering.enabled = true;
+                    // markersLayer.clustering.pixelRange = 10;
+                    // markersLayer.clustering.minimumClusterSize = 2;
+                    // markersLayer.clustering.clusterLabels = false;
+
+
+
 
                     // markersLayer.clustering.clusterEvent.addEventListener(function (clusteredEntities, cluster) {
                     //
@@ -349,7 +368,7 @@ let main = {
 
 
                     // start with custom style
-                    customStyle();
+                    // customStyle();
 
 
 
@@ -372,10 +391,17 @@ let main = {
                             viewer.camera.flyToBoundingSphere(main.boundingSphere, {
                                 //offset: offset,
                                 duration: 0,
-                                complete: () => {console.log("--------------FLY COMPLETE ----------------")
-                                    ClusterOFF();
-                                    ClusterON();
+                                complete: () => {
+                                    console.log("--------------FLY COMPLETE ----------------");
+                                    // ClusterOFF();
+                                    // ClusterON();
+                                    markersLayer.clustering.enabled = true;
+                                    markersLayer.clustering.pixelRange = 10;
+                                    markersLayer.clustering.minimumClusterSize = 2;
+                                    markersLayer.clustering.clusterLabels = false;
 
+                                    // start with custom style
+                                    customStyle();
                                 }
                             });
 
@@ -421,17 +447,17 @@ function resetCounter() {
 }
 
 function checkForMarker() {
-    if (main.markers.length < 2 || !playerPlaying) return;
+    if (main.markers.length < 2 || !videoPlayer.isPlaying) return;
 
     for (i = 0; i < main.markers.length; i++) {
 
-        if (i < main.markers.length - 1 && playerTime >= main.markers[i].videoTime &&
-            playerTime < main.markers[i + 1].videoTime && markerIndex !== i) {
+        if (i < main.markers.length - 1 && videoPlayer.time >= main.markers[i].videoTime &&
+            videoPlayer.time < main.markers[i + 1].videoTime && markerIndex !== i) {
 
             markerIndex = i;
             onMarkerReached(i);
 
-        } else if (i === main.markers.length - 1 && playerTime >= main.markers[i].videoTime &&
+        } else if (i === main.markers.length - 1 && videoPlayer.time >= main.markers[i].videoTime &&
             markerIndex !== i) {
 
             markerIndex = i;
@@ -489,26 +515,6 @@ function BillboardImage(element) {
             }
         }, fadeTime);
     };
-
-    this.resize = function (value) {
-        isFading = true;
-        if (timer != null) {
-            clearInterval(timer);
-        }
-        timer = setInterval(function () {
-            if (op <= 0.05) {
-                isFading = false;
-                clearInterval(timer);
-                timer = null;
-                element.billboard.width += 1;
-                //element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, 0.001);
-            }
-            if (isFading) {
-                //element.billboard.color = new Cesium.Color(1.0, 1.0, 1.0, op);
-                op -= 0.025;
-            }
-        }, fadeTime);
-    }
 }
 
 
@@ -524,7 +530,6 @@ function onMarkerReached(index) {
     /// debug
     DisplayPlayerMessage("marker:" + index + " - " + main.markers[index].title);
     logger.log("linkato su marker : " + index + " - " + main.markers[index].title);
-    logger.log("player:" + playerTime + " - marker:" + main.markers[index].time);
 
     /// fade in-out old placeholders
     if (oldMarkerIndex != null) {
